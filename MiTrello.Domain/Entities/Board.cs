@@ -5,27 +5,30 @@ namespace MiniTrello.Domain.Entities
 {
     public class Board : IEntity
     {
-        private readonly IList<Lane> _laneList = new List<Lane>();
-        private readonly IList<Account> _accounts = new List<Account>();
+        private readonly IList<Lane> _lanes = new List<Lane>();
+        private readonly IList<Account> _memberAccounts = new List<Account>();
+        private readonly IList<Account> _adminAccounts = new List<Account>();
         public virtual string Title { get; set; }
         public virtual long Id { get; set; }
         public virtual bool IsArchived { get; set; }
 
         public virtual IEnumerable<Lane> Lanes
         {
-            get { return _laneList; }
-        }
-
-        public virtual IEnumerable<Account> Accounts
+            get { return _lanes; }
+        }public virtual IEnumerable<Account> AdminAccounts
         {
-            get { return _accounts; }
+            get { return _adminAccounts; }
+        }
+        public virtual IEnumerable<Account> MemberAccounts
+        {
+            get { return _memberAccounts; }
         }
 
         public virtual void AddMember(Account member)
         {
-            if (!_accounts.Contains(member))
+            if (!_memberAccounts.Contains(member))
             {
-                _accounts.Add(member);    
+                _memberAccounts.Add(member);    
             }
         }
     }

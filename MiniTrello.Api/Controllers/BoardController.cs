@@ -21,6 +21,7 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository = writeOnlyRepository;
             _mappingEngine = mappingEngine;
         }
+        
 
         /*[POST("board/rename/{id}")]
         public HttpResponseMessage RenameBoard([FromBody] ChangeBoardTitleModel model, long id)
