@@ -188,7 +188,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="CustomExceptions\BadRequestException.cs" />
     <Compile Include="Models\ChangeBoardTitleModel.cs" />
-    <Compile Include="Models\CreatBoardModel.cs" />
     <Compile Include="Other\RegexUtilities.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">

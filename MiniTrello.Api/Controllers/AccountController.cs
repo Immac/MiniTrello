@@ -53,7 +53,19 @@ namespace MiniTrello.Api.Controllers
             Account accountCreated = _writeOnlyRepository.Create(account);
             if (accountCreated != null) return new HttpResponseMessage(HttpStatusCode.OK);
             throw new BadRequestException("Hubo un error al guardar el usuario");
-        }        
+        }
+
+        [POST("{accountId}/boards/create/{token}")]
+        public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,long accountId,string token)
+        {
+            
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+    }
+
+    public class BoardCreateModel
+    {
+        public string Name { set; get; } 
     }
 }
 
