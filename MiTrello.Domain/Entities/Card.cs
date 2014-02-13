@@ -2,9 +2,9 @@
 {
     public class Card : IEntity
     {
-        public long Id { get; set; }
-        public bool IsArchived { get; set; }
-        public string Name { get; set; }
-        public string Content { get; set; }
+        public virtual long Id { get; set; }
+        public virtual bool IsArchived { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string Content { get; set; }
     }
 }

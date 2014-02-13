@@ -37,11 +37,11 @@ namespace MiniTrello.Api.Controllers
                     account1 => account1.Email == model.Email && account1.Password == model.Password);
             if (account != null)
             {
-                return new AuthenticationModel(){Token = "Existe"};
+                return new AuthenticationModel {Token = "Existe"};
             }
             
             throw new BadRequestException(
-                "Usuario o clave incorrecto");
+                "Incorrect Username or Password");
         }
 
         [POST("register")]
@@ -53,9 +53,7 @@ namespace MiniTrello.Api.Controllers
             Account accountCreated = _writeOnlyRepository.Create(account);
             if (accountCreated != null) return new HttpResponseMessage(HttpStatusCode.OK);
             throw new BadRequestException("Hubo un error al guardar el usuario");
-        }
-
-        
+        }        
     }
 }
 
