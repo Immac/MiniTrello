@@ -51,7 +51,7 @@ namespace MiniTrello.Api.Controllers
             }
             
             throw new BadRequestException(
-                "Incorrect Username or Password");
+                "Incorrect Username or Password!");
         }
 
         [POST("register")]
