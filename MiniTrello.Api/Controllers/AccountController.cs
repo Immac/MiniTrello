@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
@@ -37,7 +39,15 @@ namespace MiniTrello.Api.Controllers
                     account1 => account1.Email == model.Email && account1.Password == model.Password);
             if (account != null)
             {
-                return new AuthenticationModel {Token = "Existe"};
+                string token = Security.CreateToken(account);
+                var newSession = new Session
+                {
+                    Token = token,
+                    DateStarted = DateTime.Now,
+                    Duration = TimeSpan.FromHours(18)
+                };
+                var sessionCreated = _writeOnlyRepository.Create(newSession);
+                if(sessionCreated != null) return new AuthenticationModel {Token = token};
             }
             
             throw new BadRequestException(
@@ -52,14 +62,24 @@ namespace MiniTrello.Api.Controllers
             Account account = _mappingEngine.Map<AccountRegisterModel,Account>(model);
             Account accountCreated = _writeOnlyRepository.Create(account);
             if (accountCreated != null) return new HttpResponseMessage(HttpStatusCode.OK);
-            throw new BadRequestException("Hubo un error al guardar el usuario");
+            throw new BadRequestException("There has been an error while trying to add this user");
         }
 
-        [POST("{accountId}/boards/create/{token}")]
-        public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,long accountId,string token)
+        [POST("/boards/create/{token}")]
+        public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,string token)
         {
-            
             return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+    }
+
+    public class Security
+    {
+        public static string CreateToken(Account account)
+        {
+            var token = account.FirstName + ";" 
+                + account.Id + ";"
+                    + DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            return token;
         }
     }
 
@@ -77,7 +97,7 @@ public class RegisterValidator : IRegisterValidator<AccountRegisterModel>
     {
          if (model.Password != model.ConfirmPassword)
     {
-        return "Claves no son iguales";
+        return "The password confirmation and password fields do not match";
     }
 
     if (model.Password.Count() < 8)

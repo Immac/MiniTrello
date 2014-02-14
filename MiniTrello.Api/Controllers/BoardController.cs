@@ -33,7 +33,8 @@ namespace MiniTrello.Api.Controllers
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
-            //validar seguridad
+            
+            
             var memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
             var board = _readOnlyRepository.GetById<Board>(model.BoardID);
             
@@ -41,6 +42,13 @@ namespace MiniTrello.Api.Controllers
             var updatedBoard = _writeOnlyRepository.Update(board);
             var boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
             return boardModel;
+        }
+
+        [POST("boards/create/{token}")]
+        public HttpResponseMessage AddBoard([FromBody] CreateBoardModel model, string token)
+        {
+
+            return null;
         }
     }
 
