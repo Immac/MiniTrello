@@ -24,17 +24,16 @@ namespace MiniTrello.Api.Controllers
         
 
         /*[POST("board/rename/{id}")]
-        public HttpResponseMessage RenameBoard([FromBody] ChangeBoardTitleModel model, long id)
+        public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel model, long id)
         {
-            Board board = _mappingEngine.Map<ChangeBoardTitleModel, Board>(model);
+            Board board = _mappingEngine.Map<BoardChangeTitleModel, Board>(model);
             return null;
         }*/
 
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
-            
-            
+
             var memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
             var board = _readOnlyRepository.GetById<Board>(model.BoardID);
             
@@ -45,21 +44,10 @@ namespace MiniTrello.Api.Controllers
         }
 
         [POST("boards/create/{token}")]
-        public HttpResponseMessage AddBoard([FromBody] CreateBoardModel model, string token)
+        public HttpResponseMessage AddBoard([FromBody] BoardCreateModel model, string token)
         {
 
             return null;
         }
-    }
-
-    public class AddMemberBoardModel
-    {
-        public long MemberID { get; set; }
-        public long BoardID { get; set; }
-    }
-
-    public class BoardModel
-    {
-        public string Title { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 namespace MiniTrello.Api.Models
 {
-    public class AuthenticationModel
+    public class AccountAuthenticationModel
     {
         public string Token { get; set; }
     }

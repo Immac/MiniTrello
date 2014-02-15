@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +6,7 @@ using System.Web;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
+using MiniTrello.Api.Controllers.Helpers;
 using MiniTrello.Api.CustomExceptions;
 using MiniTrello.Api.Models;
 using MiniTrello.Api.Other;
@@ -29,31 +29,27 @@ namespace MiniTrello.Api.Controllers
             _mappingEngine = mappingEngine;
         }
 
-
-
         [POST("login")]
-        public AuthenticationModel Login([FromBody] AccountLoginModel model)
+        public AccountAuthenticationModel Login([FromBody] AccountLoginModel model)
         {
-            var account =
-                _readOnlyRepository.First<Account>(
-                    account1 => account1.Email == model.Email && account1.Password == model.Password);
+            var account = FindCorrespondingAccount(model);
             if (account != null)
             {
-                string token = Security.CreateToken(account);
+                var token = Security.CreateToken(account);
+                var sessionDuration = Security.GetTokenLifeSpan(model);    
                 var newSession = new Session
                 {
                     Token = token,
                     DateStarted = DateTime.Now,
-                    Duration = TimeSpan.FromHours(18)
+                    Duration = sessionDuration
                 };
                 var sessionCreated = _writeOnlyRepository.Create(newSession);
-                if(sessionCreated != null) return new AuthenticationModel {Token = token};
+                if(sessionCreated != null) return new AccountAuthenticationModel {Token = token};
             }
-            
-            throw new BadRequestException(
-                "Incorrect Username or Password!");
+            throw new BadRequestException("Incorrect Username or Password!");
         }
 
+       
         [POST("register")]
         public HttpResponseMessage Register([FromBody] AccountRegisterModel model)
         {
@@ -70,22 +66,12 @@ namespace MiniTrello.Api.Controllers
         {
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
-    }
 
-    public class Security
-    {
-        public static string CreateToken(Account account)
+        private Account FindCorrespondingAccount(AccountLoginModel model)
         {
-            var token = account.FirstName + ";" 
-                + account.Id + ";"
-                    + DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            return token;
+            return _readOnlyRepository.First<Account>(
+                account1 => account1.Email == model.Email && account1.Password == model.Password);
         }
-    }
-
-    public class BoardCreateModel
-    {
-        public string Name { set; get; } 
     }
 }
 
