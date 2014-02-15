@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 

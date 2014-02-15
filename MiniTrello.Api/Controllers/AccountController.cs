@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
@@ -39,6 +38,7 @@ namespace MiniTrello.Api.Controllers
                 var sessionDuration = Security.GetTokenLifeSpan(model);    
                 var newSession = new Session
                 {
+                    UserAccount = account,
                     Token = token,
                     DateStarted = DateTime.Now,
                     Duration = sessionDuration

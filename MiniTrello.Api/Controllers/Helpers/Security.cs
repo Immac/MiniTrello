@@ -1,26 +1,20 @@
-using System;
 using System.Globalization;
 using MiniTrello.Api.Models;
 using MiniTrello.Domain.Entities;
 
 namespace MiniTrello.Api.Controllers.Helpers
 {
-    public class Security
+    public static class Security
     {
         public static string CreateToken(Account account)
         {
-            var token = account.FirstName + ";" 
-                        + account.Id + ";"
-                        + DateTime.Now.ToString(CultureInfo.InvariantCulture) + ";"
-                        + (DateTime.Now + TimeSpan.FromHours(2));
+            var token = account.Id.ToString(CultureInfo.InvariantCulture).GetHashCode().ToString(CultureInfo.InvariantCulture);
             return token;
         }
 
-        public static TimeSpan GetTokenLifeSpan(AccountLoginModel model)
+        public static long GetTokenLifeSpan(AccountLoginModel model)
         {
-            return TimeSpan.FromHours(model.SessionDuration) > TimeSpan.FromHours(2)
-                    ? TimeSpan.FromHours(model.SessionDuration)
-                    : TimeSpan.FromHours(2);
+            return model.SessionDuration > 30 ? model.SessionDuration : 30;
         }
     }
 }
