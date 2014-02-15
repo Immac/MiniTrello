@@ -12,6 +12,7 @@ using MiniTrello.Api.Other;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
 
+
 namespace MiniTrello.Api.Controllers
 {
     public class AccountController : ApiController
@@ -38,9 +39,9 @@ namespace MiniTrello.Api.Controllers
                 var sessionDuration = Security.GetTokenLifeSpan(model);    
                 var newSession = new Session
                 {
-                    UserAccount = account,
+                    Account = account,
                     Token = token,
-                    DateStarted = DateTime.Now,
+                    DateStarted = DateTime.UtcNow,
                     Duration = sessionDuration
                 };
                 var sessionCreated = _writeOnlyRepository.Create(newSession);
@@ -64,7 +65,20 @@ namespace MiniTrello.Api.Controllers
         [POST("/boards/create/{token}")]
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,string token)
         {
-            return new HttpResponseMessage(HttpStatusCode.OK);
+
+            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);
+            if (Security.IsTokenExpired(session))
+            {
+                
+            }
+            Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
+            if (session.Account != null)
+            {
+                session.Account.AddBoard(newBoard);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+           
+            throw new BadRequestException("Session you are trying to reach does not exist in this server");
         }
 
         private Account FindCorrespondingAccount(AccountLoginModel model)

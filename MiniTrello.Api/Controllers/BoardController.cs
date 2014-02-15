@@ -33,7 +33,6 @@ namespace MiniTrello.Api.Controllers
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
-
             var memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
             var board = _readOnlyRepository.GetById<Board>(model.BoardID);
             
@@ -46,7 +45,7 @@ namespace MiniTrello.Api.Controllers
         [POST("boards/create/{token}")]
         public HttpResponseMessage AddBoard([FromBody] BoardCreateModel model, string token)
         {
-
+            //Session session = _readOnlyRepository.First(token);
             return null;
         }
     }
