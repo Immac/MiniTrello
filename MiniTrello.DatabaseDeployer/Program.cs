@@ -22,7 +22,7 @@ namespace MiniTrello.DatabaseDeployer
 
             dd.Drop();
             Console.WriteLine("Database dropped.");
-            Thread.Sleep(1000);
+
 
             dd.Create();
             Console.WriteLine("Database created.");
@@ -39,7 +39,7 @@ namespace MiniTrello.DatabaseDeployer
             session.Close();
             sessionFactory.Close();
             Console.WriteLine("Seed data added.");
-            Thread.Sleep(5000);
+
         }
     }
 }

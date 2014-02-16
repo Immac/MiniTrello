@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
@@ -40,7 +39,7 @@ namespace MiniTrello.Api.Controllers
                 long sessionDuration = Security.GetTokenLifeSpan(model);    
                 Session newSession = new Session
                 {
-                    Account = account,
+                    SessionAccount = account,
                     Token = token,
                     DateStarted = DateTime.UtcNow,
                     Duration = sessionDuration
@@ -67,23 +66,41 @@ namespace MiniTrello.Api.Controllers
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,string token)
         {
             
-            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);
-            if (Security.IsTokenExpired(session))   
+            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);          
+            if (session.SessionAccount != null)
             {
-                throw new BadRequestException("Your session has expired, please log in again");
-            }
-            Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
-            if (session.Account != null)
-            {
-                
+                Security.IsTokenExpired(session);
+                Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
                 Account myAccount =
-                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.Account.Email);
+                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
                 myAccount.AddBoard(newBoard);
                 _writeOnlyRepository.Update(myAccount);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
-           
             throw new BadRequestException("Session you are trying to reach does not exist in this server");
+        }
+
+        [POST("/boards/rename/{token}")]
+        public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel boardRenameModel,string token)
+        {
+            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);
+            if (session.SessionAccount != null)
+            {
+                Security.IsTokenExpired(session);
+                Account myAccount =
+                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+                Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
+                if(!isThisAccountAdminOfThisBoard(editedBoard, myAccount)) throw new BadRequestException("You do not posses Administrative priviledges on this board");
+                editedBoard.Title = boardRenameModel.Title;
+                _writeOnlyRepository.Update(editedBoard);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            throw new BadRequestException("Session you are trying to reach does not exist in this server");
+        }
+
+        private bool isThisAccountAdminOfThisBoard(Board board, Account account)
+        {
+            return board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email);
         }
 
         private Account FindCorrespondingAccount(AccountLoginModel model)

@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
+using MiniTrello.Api.CustomExceptions;
 using MiniTrello.Api.Models;
 using MiniTrello.Domain.Entities;
 
@@ -24,7 +27,10 @@ namespace MiniTrello.Api.Controllers.Helpers
 
         public static bool IsTokenExpired(Session session)
         {
-            return session.DateStarted.AddMinutes(session.Duration) < DateTime.UtcNow;
+            bool isTokenExpired = session.DateStarted.AddMinutes(session.Duration) < DateTime.UtcNow;
+            if(isTokenExpired)
+                throw new BadRequestException("Your session has expired, please log in again");
+            return false;
         }
     }
 }

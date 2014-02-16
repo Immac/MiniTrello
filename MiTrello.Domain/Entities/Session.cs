@@ -9,6 +9,6 @@ namespace MiniTrello.Domain.Entities
         public virtual DateTime DateStarted { set; get; }
         public virtual long Duration { set; get; }
         public virtual bool IsArchived { get; set; }
-        public virtual Account Account { get; set; }
+        public virtual Account SessionAccount { get; set; }
     }
 }

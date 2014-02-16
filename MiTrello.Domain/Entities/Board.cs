@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MiniTrello.Domain.Entities
 {
@@ -8,6 +7,7 @@ namespace MiniTrello.Domain.Entities
         private readonly IList<Lane> _lanes = new List<Lane>();
         private readonly IList<Account> _memberAccounts = new List<Account>();
         private readonly IList<Account> _adminAccounts = new List<Account>();
+
         public virtual string Title { get; set; }
         public virtual long Id { get; set; }
         public virtual bool IsArchived { get; set; }
