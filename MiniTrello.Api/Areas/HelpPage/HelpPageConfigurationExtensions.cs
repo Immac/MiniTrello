@@ -215,13 +215,13 @@ namespace MiniTrello.Api.Areas.HelpPage
 
             try
             {
-                foreach (var item in sampleGenerator.GetSampleRequests(apiDescription))
+                foreach (KeyValuePair<MediaTypeHeaderValue, object> item in sampleGenerator.GetSampleRequests(apiDescription))
                 {
                     apiModel.SampleRequests.Add(item.Key, item.Value);
                     LogInvalidSampleAsError(apiModel, item.Value);
                 }
 
-                foreach (var item in sampleGenerator.GetSampleResponses(apiDescription))
+                foreach (KeyValuePair<MediaTypeHeaderValue, object> item in sampleGenerator.GetSampleResponses(apiDescription))
                 {
                     apiModel.SampleResponses.Add(item.Key, item.Value);
                     LogInvalidSampleAsError(apiModel, item.Value);

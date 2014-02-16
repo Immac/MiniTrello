@@ -26,7 +26,7 @@ namespace MiniTrello.Infrastructure
             string pageUrl = "Page url: " + HttpContext.Current.Request.Url;
             string userAgent = "Browser: " + HttpContext.Current.Request.UserAgent;
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("##### User Details #####");
             sb.AppendLine();
@@ -44,7 +44,7 @@ namespace MiniTrello.Infrastructure
 
         bool IsExceptionThatShouldBeExcluded(HttpActionExecutedContext actionExecutedContext)
         {
-            var stop = false;
+            bool stop = false;
             _excludingConditions.ForEach(x =>
                                              {
                                                  if (x(actionExecutedContext.Exception))

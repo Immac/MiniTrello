@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Security.Cryptography;
 using MiniTrello.Api.Models;
 using MiniTrello.Domain.Entities;
 
@@ -9,7 +10,10 @@ namespace MiniTrello.Api.Controllers.Helpers
     {
         public static string CreateToken(Account account)
         {
-            var token = account.Id.ToString(CultureInfo.InvariantCulture).GetHashCode().ToString(CultureInfo.InvariantCulture);
+            SimpleAES myAES = new SimpleAES();
+            int random = RandomHelper.Instance.Next();
+            long tokenSeed = account.Id.GetHashCode() + random;
+            string token = myAES.EncryptToString(tokenSeed.ToString(CultureInfo.InvariantCulture));
             return token;
         }
 
@@ -20,7 +24,7 @@ namespace MiniTrello.Api.Controllers.Helpers
 
         public static bool IsTokenExpired(Session session)
         {
-            return session.DateStarted.AddMinutes(session.Duration) > DateTime.UtcNow;
+            return session.DateStarted.AddMinutes(session.Duration) < DateTime.UtcNow;
         }
     }
 }

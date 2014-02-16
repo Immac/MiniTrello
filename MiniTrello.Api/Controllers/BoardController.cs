@@ -33,12 +33,12 @@ namespace MiniTrello.Api.Controllers
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
-            var memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
-            var board = _readOnlyRepository.GetById<Board>(model.BoardID);
+            Account memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
+            Board board = _readOnlyRepository.GetById<Board>(model.BoardID);
             
             board.AddMember((memberToAdd));
-            var updatedBoard = _writeOnlyRepository.Update(board);
-            var boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
+            Board updatedBoard = _writeOnlyRepository.Update(board);
+            BoardModel boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
             return boardModel;
         }
 

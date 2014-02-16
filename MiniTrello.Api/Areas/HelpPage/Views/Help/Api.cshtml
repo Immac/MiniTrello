@@ -1,9 +1,10 @@
 @using System.Web.Http
+@using System.Web.Http.Description
 @using MiniTrello.Api.Areas.HelpPage.Models
 @model HelpPageApiModel
 
 @{
-    var description = Model.ApiDescription;
+    ApiDescription description = Model.ApiDescription;
     ViewBag.Title = description.HttpMethod.Method + " " + description.RelativePath;
 }
 

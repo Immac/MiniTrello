@@ -31,7 +31,7 @@ namespace MiniTrello.Api
 
         public IContainer BuildContainer()
         {
-            var containerBuilder = new ContainerBuilder();
+            ContainerBuilder containerBuilder = new ContainerBuilder();
 
             return new Bootstrapper(containerBuilder)
                  .WithTask(new ConfigureDependencies(containerBuilder))

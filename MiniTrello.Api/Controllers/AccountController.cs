@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
@@ -32,19 +33,19 @@ namespace MiniTrello.Api.Controllers
         [POST("login")]
         public AccountAuthenticationModel Login([FromBody] AccountLoginModel model)
         {
-            var account = FindCorrespondingAccount(model);
+            Account account = FindCorrespondingAccount(model);
             if (account != null)
             {
-                var token = Security.CreateToken(account);
-                var sessionDuration = Security.GetTokenLifeSpan(model);    
-                var newSession = new Session
+                string token = Security.CreateToken(account);
+                long sessionDuration = Security.GetTokenLifeSpan(model);    
+                Session newSession = new Session
                 {
                     Account = account,
                     Token = token,
                     DateStarted = DateTime.UtcNow,
                     Duration = sessionDuration
                 };
-                var sessionCreated = _writeOnlyRepository.Create(newSession);
+                Session sessionCreated = _writeOnlyRepository.Create(newSession);
                 if(sessionCreated != null) return new AccountAuthenticationModel {Token = token};
             }
             throw new BadRequestException("Incorrect Username or Password!");
@@ -54,7 +55,7 @@ namespace MiniTrello.Api.Controllers
         [POST("register")]
         public HttpResponseMessage Register([FromBody] AccountRegisterModel model)
         {
-            var errorMessage = new RegisterValidator().Validate(model);
+            string errorMessage = new RegisterValidator().Validate(model);
             if (errorMessage.Length > 0) throw new BadRequestException(errorMessage);
             Account account = _mappingEngine.Map<AccountRegisterModel,Account>(model);
             Account accountCreated = _writeOnlyRepository.Create(account);
@@ -65,16 +66,20 @@ namespace MiniTrello.Api.Controllers
         [POST("/boards/create/{token}")]
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,string token)
         {
-
+            
             Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);
-            if (Security.IsTokenExpired(session))
+            if (Security.IsTokenExpired(session))   
             {
-                
+                throw new BadRequestException("Your session has expired, please log in again");
             }
             Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
             if (session.Account != null)
             {
-                session.Account.AddBoard(newBoard);
+                
+                Account myAccount =
+                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.Account.Email);
+                myAccount.AddBoard(newBoard);
+                _writeOnlyRepository.Update(myAccount);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
            

@@ -43,7 +43,7 @@ namespace MiniTrello.Infrastructure
             if (_webApiControllerExample == null)
                 throw new ArgumentException("Please set the WebApi Controller Example.");
 
-            var bootstrapperTasks = new List<IBootstrapperTask>
+            List<IBootstrapperTask> bootstrapperTasks = new List<IBootstrapperTask>
                                         {
                                             //boostrapper tasks here                    
                                             new ConfigureThisWebApplication(_containerBuilder).WithExampleMvcController(_mvcControllerExample).WithExampleWebApiController(_webApiControllerExample),

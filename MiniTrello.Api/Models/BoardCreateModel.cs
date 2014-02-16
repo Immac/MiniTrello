@@ -2,6 +2,6 @@
 {
     public class BoardCreateModel
     {
-        public string Name { set; get; } 
+        public string Title { set; get; } 
     }
 }

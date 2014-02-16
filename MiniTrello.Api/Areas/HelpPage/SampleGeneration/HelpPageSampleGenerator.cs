@@ -82,11 +82,11 @@ namespace MiniTrello.Api.Areas.HelpPage
             IEnumerable<string> parameterNames = api.ParameterDescriptions.Select(p => p.Name);
             Collection<MediaTypeFormatter> formatters;
             Type type = ResolveType(api, controllerName, actionName, parameterNames, sampleDirection, out formatters);
-            var samples = new Dictionary<MediaTypeHeaderValue, object>();
+            Dictionary<MediaTypeHeaderValue, object> samples = new Dictionary<MediaTypeHeaderValue, object>();
 
             // Use the samples provided directly for actions
-            var actionSamples = GetAllActionSamples(controllerName, actionName, parameterNames, sampleDirection);
-            foreach (var actionSample in actionSamples)
+            IEnumerable<KeyValuePair<HelpPageSampleKey, object>> actionSamples = GetAllActionSamples(controllerName, actionName, parameterNames, sampleDirection);
+            foreach (KeyValuePair<HelpPageSampleKey, object> actionSample in actionSamples)
             {
                 samples.Add(actionSample.Key.MediaType, WrapSampleIfString(actionSample.Value));
             }
@@ -96,7 +96,7 @@ namespace MiniTrello.Api.Areas.HelpPage
             if (type != null && !typeof(HttpResponseMessage).IsAssignableFrom(type))
             {
                 object sampleObject = GetSampleObject(type);
-                foreach (var formatter in formatters)
+                foreach (MediaTypeFormatter formatter in formatters)
                 {
                     foreach (MediaTypeHeaderValue mediaType in formatter.SupportedMediaTypes)
                     {
@@ -193,7 +193,7 @@ namespace MiniTrello.Api.Areas.HelpPage
             {
                 // Re-compute the supported formatters based on type
                 Collection<MediaTypeFormatter> newFormatters = new Collection<MediaTypeFormatter>();
-                foreach (var formatter in api.ActionDescriptor.Configuration.Formatters)
+                foreach (MediaTypeFormatter formatter in api.ActionDescriptor.Configuration.Formatters)
                 {
                     if (IsFormatSupported(sampleDirection, formatter, type))
                     {
@@ -345,7 +345,7 @@ namespace MiniTrello.Api.Areas.HelpPage
         private IEnumerable<KeyValuePair<HelpPageSampleKey, object>> GetAllActionSamples(string controllerName, string actionName, IEnumerable<string> parameterNames, SampleDirection sampleDirection)
         {
             HashSet<string> parameterNamesSet = new HashSet<string>(parameterNames, StringComparer.OrdinalIgnoreCase);
-            foreach (var sample in ActionSamples)
+            foreach (KeyValuePair<HelpPageSampleKey, object> sample in ActionSamples)
             {
                 HelpPageSampleKey sampleKey = sample.Key;
                 if (String.Equals(controllerName, sampleKey.ControllerName, StringComparison.OrdinalIgnoreCase) &&

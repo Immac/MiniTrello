@@ -1,9 +1,10 @@
 @using System.Web.Http
+@using System.Web.Http.Description
 @using MiniTrello.Api.Areas.HelpPage.Models
 @model HelpPageApiModel
 
 @{ 
-    var description = Model.ApiDescription;
+    ApiDescription description = Model.ApiDescription;
     bool hasParameters = description.ParameterDescriptions.Count > 0;
     bool hasRequestSamples = Model.SampleRequests.Count > 0;
     bool hasResponseSamples = Model.SampleResponses.Count > 0;
