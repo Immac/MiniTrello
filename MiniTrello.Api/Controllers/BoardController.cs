@@ -60,7 +60,7 @@ namespace MiniTrello.Api.Controllers
         {
             Account memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
             Board board = _readOnlyRepository.GetById<Board>(model.BoardID);
-            board.AddMember((memberToAdd));
+            board.AddMemberAccount((memberToAdd));
             Board updatedBoard = _writeOnlyRepository.Update(board);
             BoardModel boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
             return boardModel;

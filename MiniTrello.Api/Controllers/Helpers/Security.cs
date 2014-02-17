@@ -43,7 +43,7 @@ namespace MiniTrello.Api.Controllers.Helpers
         }
         public static void IsThisAccountAdminOfThisBoard(Board board, Account account)
         {
-            if (board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email))
+            if (board.AdministratorAccounts.Any(adminAccount => adminAccount.Email == account.Email))
                 return;
             throw new BadRequestException("You do not posses Administrative priviledges on this board");
         }
