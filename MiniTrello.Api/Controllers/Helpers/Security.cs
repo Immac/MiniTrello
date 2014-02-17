@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using MiniTrello.Api.CustomExceptions;
@@ -33,12 +34,18 @@ namespace MiniTrello.Api.Controllers.Helpers
                 throw new BadRequestException("Your session has expired, please log in again");
             return false;
         }
-        public static Session VerifySession(string token,IReadOnlyRepository readOnlyRepository)
+        public static Session VerifiySession(string token,IReadOnlyRepository readOnlyRepository)
         {
             Session session = readOnlyRepository.First<Session>(session1 => session1.Token == token);
             if (session == null)
                 throw new BadRequestException("Session you are trying to reach does not exist in this server");
             return session;
+        }
+        public static void IsThisAccountAdminOfThisBoard(Board board, Account account)
+        {
+            if (board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email))
+                return;
+            throw new BadRequestException("You do not posses Administrative priviledges on this board");
         }
     }
 }

@@ -26,41 +26,35 @@ namespace MiniTrello.Api.Controllers
             _mappingEngine = mappingEngine;
         }
         
-
-        /*[POST("board/rename/{id}")]
-        public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel model, long id)
-        {
-            Board board = _mappingEngine.Map<BoardChangeTitleModel, Board>(model);
-            return null;
-        }*/
         [POST("/boards/rename/{token}")]
         public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel boardRenameModel, string token)
         {
-            Session session = Security.VerifySession(token, _readOnlyRepository);
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
             Account myAccount =
                 _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
-            isThisAccountAdminOfThisBoard(editedBoard, myAccount);
+            Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.Title = boardRenameModel.Title;
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        [POST("boards/delete/{token}")]
+        //Can restore files too by setting "IsArchived to false"
+        [DELETE("boards/delete/{token}")]
         public HttpResponseMessage DeleteBoard([FromBody] BoardDeleteModel model, string token)
         {
-            return null;
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount =
+                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.Id);
+            Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
+            editedBoard.IsArchived = model.IsArchived;
+            _writeOnlyRepository.Update(editedBoard);
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
-
-
-        private void isThisAccountAdminOfThisBoard(Board board, Account account)
-        {
-            if (board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email))
-                return;
-            throw new BadRequestException("You do not posses Administrative priviledges on this board");
-        }
-
+       
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
@@ -75,7 +69,7 @@ namespace MiniTrello.Api.Controllers
         [POST("/boards/create/{token}")]
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model, string token)
         {
-            Session session = Security.VerifySession(token,_readOnlyRepository);
+            Session session = Security.VerifiySession(token,_readOnlyRepository);
             Security.IsTokenExpired(session);
             Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
             Account myAccount =
@@ -84,12 +78,8 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(myAccount);
             return new HttpResponseMessage(HttpStatusCode.OK);      
         }
+        
 
         
-    }
-
-    public class BoardDeleteModel
-    {
-
     }
 }
