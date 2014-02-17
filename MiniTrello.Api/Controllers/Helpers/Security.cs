@@ -58,7 +58,7 @@ namespace MiniTrello.Api.Controllers.Helpers
             {
                 IsThisAccountAdminOfThisBoard(board, account);
             }
-            catch (BadRequestException exception)
+            catch (BadRequestException)
             {
                 throw new BadRequestException("You are not a member of this board.");
             }

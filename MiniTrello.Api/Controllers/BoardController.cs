@@ -54,6 +54,23 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        [DELETE("boards/deletelane/{token}")]
+        public HttpResponseMessage DeleteLane([FromBody] LaneDeleteModel model, string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            var myAccount = _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            var lane = _readOnlyRepository.First<Lane>(lane1 => lane1.Id == model.LaneId);
+            if (lane == null) throw new BadRequestException("Lane Id does not match any existing lanes");
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(lane));
+            if (editedBoard == null) throw new BadRequestException("This lane is not owned by any board");
+            Security.IsThisAccountMemberOfThisBoard(editedBoard, myAccount);
+            lane.IsArchived = model.IsArchived;
+            _writeOnlyRepository.Update(lane);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
         //Can restore files too by setting "IsArchived to false"
         [DELETE("boards/delete/{token}")]
         public HttpResponseMessage DeleteBoard([FromBody] BoardDeleteModel model, string token)
@@ -68,6 +85,8 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        
        
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
@@ -97,10 +116,5 @@ namespace MiniTrello.Api.Controllers
         
 
         
-    }
-
-    public class LaneCreateModel
-    {
-        public long BoardId { set; get; }
     }
 }
