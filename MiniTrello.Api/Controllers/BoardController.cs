@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
@@ -31,7 +32,7 @@ namespace MiniTrello.Api.Controllers
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
-            Account myAccount =
+            var myAccount =
                 _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
@@ -40,6 +41,19 @@ namespace MiniTrello.Api.Controllers
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        [POST("boards/createlane/{token}")]
+        public HttpResponseMessage CreateLane([FromBody]LaneCreateModel model,string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            var myAccount = _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            var editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.BoardId);
+            Security.IsThisAccountMemberOfThisBoard(editedBoard,myAccount);
+            Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
+            editedBoard.AddLane(newLane);
+            _writeOnlyRepository.Update(editedBoard);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
         //Can restore files too by setting "IsArchived to false"
         [DELETE("boards/delete/{token}")]
         public HttpResponseMessage DeleteBoard([FromBody] BoardDeleteModel model, string token)
@@ -78,8 +92,15 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(myAccount);
             return new HttpResponseMessage(HttpStatusCode.OK);      
         }
+
+        
         
 
         
+    }
+
+    public class LaneCreateModel
+    {
+        public long BoardId { set; get; }
     }
 }

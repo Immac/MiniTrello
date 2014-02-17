@@ -49,5 +49,20 @@ namespace MiniTrello.Api.Controllers.Helpers
                 return;
             throw new BadRequestException("You do not posses Administrative priviledges on this board");
         }
+
+        public static void IsThisAccountMemberOfThisBoard(Board board, Account account)
+        {
+            if (board.MemberAccounts.Any(memberAccount => memberAccount.Email == account.Email))
+                return;
+            try
+            {
+                IsThisAccountAdminOfThisBoard(board, account);
+            }
+            catch (BadRequestException exception)
+            {
+                throw new BadRequestException("You are not a member of this board.");
+            }
+            
+        }
     }
 }
