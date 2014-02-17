@@ -62,23 +62,6 @@ namespace MiniTrello.Api.Controllers
             throw new BadRequestException("There has been an error while trying to add this user");
         }
 
-        [POST("/boards/create/{token}")]
-        public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model,string token)
-        {
-            
-            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);          
-            if (session.SessionAccount != null)
-            {
-                Security.IsTokenExpired(session);
-                Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
-                Account myAccount =
-                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
-                myAccount.AddBoard(newBoard);
-                _writeOnlyRepository.Update(myAccount);
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            throw new BadRequestException("Session you are trying to reach does not exist in this server");
-        }
 
         
 

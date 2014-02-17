@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using MiniTrello.Api.CustomExceptions;
 using MiniTrello.Api.Models;
 using MiniTrello.Domain.Entities;
+using MiniTrello.Domain.Services;
 
 namespace MiniTrello.Api.Controllers.Helpers
 {
@@ -31,6 +32,13 @@ namespace MiniTrello.Api.Controllers.Helpers
             if(isTokenExpired)
                 throw new BadRequestException("Your session has expired, please log in again");
             return false;
+        }
+        public static Session VerifySession(string token,IReadOnlyRepository readOnlyRepository)
+        {
+            Session session = readOnlyRepository.First<Session>(session1 => session1.Token == token);
+            if (session == null)
+                throw new BadRequestException("Session you are trying to reach does not exist in this server");
+            return session;
         }
     }
 }

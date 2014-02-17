@@ -36,42 +36,60 @@ namespace MiniTrello.Api.Controllers
         [POST("/boards/rename/{token}")]
         public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel boardRenameModel, string token)
         {
-            Session session = _readOnlyRepository.First<Session>(session1 => session1.Token == token);
-            if (session.SessionAccount != null)
-            {
-                Security.IsTokenExpired(session);
-                Account myAccount =
-                    _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
-                Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
-                if (!isThisAccountAdminOfThisBoard(editedBoard, myAccount)) throw new BadRequestException("You do not posses Administrative priviledges on this board");
-                editedBoard.Title = boardRenameModel.Title;
-                _writeOnlyRepository.Update(editedBoard);
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            throw new BadRequestException("Session you are trying to reach does not exist in this server");
+            Session session = Security.VerifySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount =
+                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
+            isThisAccountAdminOfThisBoard(editedBoard, myAccount);
+            editedBoard.Title = boardRenameModel.Title;
+            _writeOnlyRepository.Update(editedBoard);
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        private bool isThisAccountAdminOfThisBoard(Board board, Account account)
+        [POST("boards/delete/{token}")]
+        public HttpResponseMessage DeleteBoard([FromBody] BoardDeleteModel model, string token)
         {
-            return board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email);
+            return null;
         }
+
+
+        private void isThisAccountAdminOfThisBoard(Board board, Account account)
+        {
+            if (board.AdminAccounts.Any(adminAccount => adminAccount.Email == account.Email))
+                return;
+            throw new BadRequestException("You do not posses Administrative priviledges on this board");
+        }
+
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
             Account memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
             Board board = _readOnlyRepository.GetById<Board>(model.BoardID);
-            
             board.AddMember((memberToAdd));
             Board updatedBoard = _writeOnlyRepository.Update(board);
             BoardModel boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
             return boardModel;
         }
 
-        [POST("boards/create/{token}")]
-        public HttpResponseMessage AddBoard([FromBody] BoardCreateModel model, string token)
+        [POST("/boards/create/{token}")]
+        public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model, string token)
         {
-            //Session session = _readOnlyRepository.First(token);
-            return null;
+            Session session = Security.VerifySession(token,_readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
+            Account myAccount =
+                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            myAccount.AddBoard(newBoard);
+            _writeOnlyRepository.Update(myAccount);
+            return new HttpResponseMessage(HttpStatusCode.OK);      
         }
+
+        
+    }
+
+    public class BoardDeleteModel
+    {
+
     }
 }
