@@ -48,5 +48,7 @@ namespace MiniTrello.Domain.Entities
                 _administratorAccounts.Add(admin);
             }
         }
+
+        public virtual string Log { get; set; }
     }
 }

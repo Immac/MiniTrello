@@ -70,6 +70,7 @@ namespace MiniTrello.Api.Controllers
             Security.IsThisAccountMemberOfThisBoard(editedBoard,myAccount);
             Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
             editedBoard.AddLane(newLane);
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName;
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
