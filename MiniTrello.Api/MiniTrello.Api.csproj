@@ -185,6 +185,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BoardController.cs" />
+    <Compile Include="Models\CardCreateModel.cs" />
     <Compile Include="Models\LaneCreateModel.cs" />
     <Compile Include="Models\LaneDeleteModel.cs" />
     <Compile Include="Models\BoardDeleteModel.cs" />

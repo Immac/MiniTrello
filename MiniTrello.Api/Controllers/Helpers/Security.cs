@@ -64,5 +64,13 @@ namespace MiniTrello.Api.Controllers.Helpers
             }
             
         }
+
+        public static Account GetAccountFromSession(Session session, IReadOnlyRepository readOnlyRepository)
+        {
+            //Support for archived accs
+            var account = readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            if (account != null) return account;
+            throw new BadRequestException("The account you are trying to reach does not exist in this server");
+        }
     }
 }

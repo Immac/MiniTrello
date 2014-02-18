@@ -33,21 +33,36 @@ namespace MiniTrello.Api.Controllers
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
             var myAccount =
-                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+                Security.GetAccountFromSession(session, _readOnlyRepository);
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.Title = boardRenameModel.Title;
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+        
+        [POST("boards/createcard/{token}")]
+        public HttpResponseMessage CreateCard([FromBody]CardCreateModel model,string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            var account = Security.GetAccountFromSession(session, _readOnlyRepository);
+            var lane = _readOnlyRepository.GetById<Lane>(model.LaneId);
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
+            var card = _mappingEngine.Map<CardCreateModel, Card>(model);
+            Security.IsThisAccountMemberOfThisBoard(editedBoard, account);
+            lane.AddCard(card);
+            _writeOnlyRepository.Update(editedBoard);
 
+        return new HttpResponseMessage(HttpStatusCode.OK);
+    }
         [POST("boards/createlane/{token}")]
         public HttpResponseMessage CreateLane([FromBody]LaneCreateModel model,string token)
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
-            var myAccount = _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
-            var editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.BoardId);
+            var myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            var editedBoard = _readOnlyRepository.GetById<Board>(model.BoardId);
             Security.IsThisAccountMemberOfThisBoard(editedBoard,myAccount);
             Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
             editedBoard.AddLane(newLane);
@@ -60,7 +75,7 @@ namespace MiniTrello.Api.Controllers
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
-            var myAccount = _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+            var myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
             var lane = _readOnlyRepository.First<Lane>(lane1 => lane1.Id == model.LaneId);
             if (lane == null) throw new BadRequestException("Lane Id does not match any existing lanes");
             var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(lane));
@@ -78,7 +93,7 @@ namespace MiniTrello.Api.Controllers
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
             Account myAccount =
-                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+                Security.GetAccountFromSession(session, _readOnlyRepository);
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.Id);
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.IsArchived = model.IsArchived;
@@ -106,15 +121,11 @@ namespace MiniTrello.Api.Controllers
             Security.IsTokenExpired(session);
             Board newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
             Account myAccount =
-                _readOnlyRepository.First<Account>(account1 => account1.Email == session.SessionAccount.Email);
+                Security.GetAccountFromSession(session, _readOnlyRepository);
             myAccount.AddBoard(newBoard);
             _writeOnlyRepository.Update(myAccount);
             return new HttpResponseMessage(HttpStatusCode.OK);      
         }
 
-        
-        
-
-        
     }
 }
