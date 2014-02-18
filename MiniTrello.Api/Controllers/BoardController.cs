@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
+using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 using AttributeRouting.Web.Http;
 using AutoMapper;
 using MiniTrello.Api.Controllers.Helpers;
@@ -71,6 +74,12 @@ namespace MiniTrello.Api.Controllers
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        [POST("boards/movecard/{token}")]
+        public HttpResponseMessage MoveCard([FromBody] CardMoveModel model, string token)
+        {
+            
+        }
+
         [DELETE("boards/deletelane/{token}")]
         public HttpResponseMessage DeleteLane([FromBody] LaneDeleteModel model, string token)
         {
@@ -128,7 +137,7 @@ namespace MiniTrello.Api.Controllers
             BoardModel boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
             return boardModel;
         }
-
+       
         [POST("boards/create/{token}")]
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model, string token)
         {
@@ -139,7 +148,8 @@ namespace MiniTrello.Api.Controllers
                 Security.GetAccountFromSession(session, _readOnlyRepository);
             myAccount.AddBoard(newBoard);
             _writeOnlyRepository.Update(myAccount);
-            return new HttpResponseMessage(HttpStatusCode.OK);      
+            return new HttpResponseMessage(HttpStatusCode.OK);   
+            
         }
 
         [GET("boards/{boardId}/{token}")]
@@ -151,7 +161,35 @@ namespace MiniTrello.Api.Controllers
             Board myBoard = _readOnlyRepository.GetById<Board>(boardId);
             Security.IsThisAccountMemberOfThisBoard(myBoard,myAccount);
             BoardModel boardModel = _mappingEngine.Map<Board,BoardModel>(myBoard);
+            
             return boardModel;
         }
+
+        [GET("boards/members/{boardId}/{token}")]
+        public MembersModel GetBoardMembers(long boardId, string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Board myBoard = _readOnlyRepository.GetById<Board>(boardId);
+            Security.IsThisAccountMemberOfThisBoard(myBoard, myAccount);
+            List<Account> myMemberList = myBoard.MemberAccounts.ToList();
+            List<string> myMemberNamesList = myMemberList.Select(account => (account.FirstName) + " " + (account.LastName)).ToList();
+            JavaScriptSerializer oSerializer = new JavaScriptSerializer();
+            MembersModel myModel = new MembersModel 
+                {MembersList = oSerializer.Serialize(myMemberNamesList)};
+            return myModel;
+        }
+    }
+
+    public class CardMoveModel
+    {
+        public long DestinationId { set; get; }
+        public long CardId { set; get; }
+    }
+
+    public class MembersModel
+    {
+        public string MembersList { set; get; }
     }
 }

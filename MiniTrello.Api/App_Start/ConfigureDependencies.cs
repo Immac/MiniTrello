@@ -21,7 +21,7 @@ namespace MiniTrello.Api
             _containerBuilder.Register(c => Mapper.Engine).As<IMappingEngine>();
             _containerBuilder.RegisterType<ReadOnlyRepository>().As<IReadOnlyRepository>();
             _containerBuilder.RegisterType<WriteOnlyRepository>().As<IWriteOnlyRepository>();
-            _containerBuilder.RegisterType<RegisterValidator>().As<IRegisterValidator<AccountRegisterModel>>();
+            _containerBuilder.RegisterType<ValidationHelper>().As<IRegisterValidator<AccountRegisterModel>>();
         }
     }
 }
