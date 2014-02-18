@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace MiniTrello.Domain.Entities
 {
@@ -23,5 +24,9 @@ namespace MiniTrello.Domain.Entities
             }
         }
 
+        public virtual void RemoveCard(Card card)
+        {
+            _cards.Remove(card);
+        }
     }
 }

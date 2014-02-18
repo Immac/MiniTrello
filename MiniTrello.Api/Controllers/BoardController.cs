@@ -77,7 +77,20 @@ namespace MiniTrello.Api.Controllers
         [POST("boards/movecard/{token}")]
         public HttpResponseMessage MoveCard([FromBody] CardMoveModel model, string token)
         {
-            
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Card card = _readOnlyRepository.First<Card>(card1 => card1.Id == model.CardId);
+            Lane newLane = _readOnlyRepository.GetById<Lane>(model.DestinationId);
+            Lane oldLane = _readOnlyRepository.First<Lane>(lane => lane.Cards.Contains(card));
+            Board board =
+                _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(newLane) && board1.Lanes.Contains(oldLane));
+            if (board == null) throw new BadRequestException("You can't transfer cards over boards");
+
+            newLane.AddCard(card);
+            oldLane.RemoveCard(card);
+            _writeOnlyRepository.Update(myAccount);
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [DELETE("boards/deletelane/{token}")]
