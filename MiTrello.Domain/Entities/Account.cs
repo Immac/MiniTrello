@@ -4,7 +4,8 @@ namespace MiniTrello.Domain.Entities
 {
     public class Account : IEntity
     {
-        private readonly IList<Board> _boards = new List<Board>();
+        private readonly IList<Board>         _boards        =  new List<Board>();
+        private readonly IList<Organization>  _organizations =  new List<Organization>();
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
         public virtual string Email { get; set; }
@@ -21,11 +22,16 @@ namespace MiniTrello.Domain.Entities
 
         public virtual void AddBoard(Board board)
         {
-            if (!_boards.Contains(board))
-            {
-                board.OwnerAccount = this;
-                _boards.Add(board);
-            }
+            if (_boards.Contains(board)) return;
+            board.OwnerAccount = this;
+            _boards.Add(board);
+        }
+
+        public virtual void AddOrganization(Organization organization)
+        {
+            if (_organizations.Contains(organization)) return;
+            organization.OwnerAccount = this;
+            _organizations.Add(organization);
         }
     }
 }

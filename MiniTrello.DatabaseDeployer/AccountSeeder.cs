@@ -21,10 +21,19 @@ namespace MiniTrello.DatabaseDeployer
             foreach (Account account in accountList)
             {
                 IList<Board> boards = Builder<Board>.CreateListOfSize(2).Build();
+                IList<Organization> organizations = Builder<Organization>.CreateListOfSize(2).Build();
+
                 foreach (Board board in boards)
                 {
                     _session.Save(board);
                 }
+                foreach (var organization in organizations)
+                {
+                    _session.Save(organization);
+                }
+                account.AddOrganization(organizations[0]);
+                account.AddOrganization(organizations[1]);
+
                 account.AddBoard(boards[0]);
                 account.AddBoard(boards[1]);
                 _session.Save(account);

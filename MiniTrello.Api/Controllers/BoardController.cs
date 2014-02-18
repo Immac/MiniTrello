@@ -129,7 +129,7 @@ namespace MiniTrello.Api.Controllers
             return boardModel;
         }
 
-        [POST("/boards/create/{token}")]
+        [POST("boards/create/{token}")]
         public HttpResponseMessage CreateBoard([FromBody]BoardCreateModel model, string token)
         {
             Session session = Security.VerifiySession(token,_readOnlyRepository);
