@@ -33,10 +33,11 @@ namespace MiniTrello.Api.Controllers
         public AccountAuthenticationModel Login([FromBody] AccountLoginModel model)
         {
             Account account = FindCorrespondingAccount(model);
-            if (account != null)
+            Session retrievedSession = RetrieveSession(account);
+            if (retrievedSession == null)
             {
-                string token = Security.CreateToken(account);
-                long sessionDuration = Security.GetTokenLifeSpan(model);    
+                string token = Security.CreateToken(account, _readOnlyRepository);
+                long sessionDuration = Security.GetTokenLifeSpan(model);
                 Session newSession = new Session
                 {
                     SessionAccount = account,
@@ -45,12 +46,14 @@ namespace MiniTrello.Api.Controllers
                     Duration = sessionDuration
                 };
                 Session sessionCreated = _writeOnlyRepository.Create(newSession);
-                if(sessionCreated != null) return new AccountAuthenticationModel {Token = token};
+                if (sessionCreated != null) return new AccountAuthenticationModel { Token = token };
             }
+            if (retrievedSession != null) return new AccountAuthenticationModel { Token = retrievedSession.Token };
             throw new BadRequestException("Incorrect Username or Password!");
         }
 
        
+
         [POST("register")]
         public HttpResponseMessage Register([FromBody] AccountRegisterModel model)
         {
@@ -67,9 +70,29 @@ namespace MiniTrello.Api.Controllers
 
         private Account FindCorrespondingAccount(AccountLoginModel model)
         {
-            return _readOnlyRepository.First<Account>(
+            var account =  _readOnlyRepository.First<Account>(
                 account1 => account1.Email == model.Email && account1.Password == model.Password);
+            if (account == null) throw new BadRequestException("Incorrect username or password");
+            return account;
         }
+
+        private Session RetrieveSession(Account account)
+        {
+            var session = _readOnlyRepository.Query<Session>(x => x.SessionAccount.Email == account.Email).OrderByDescending(x => x.DateStarted).FirstOrDefault();
+            if (session == null) return null;
+            try
+            {
+                Security.IsTokenExpired(session);
+            }
+            catch (BadRequestException exception)
+            {
+                if (exception.Response.ReasonPhrase == "Your session has expired, please log in again")
+                    return null;
+            }
+            return session;
+        }
+
+
     }
 }
 

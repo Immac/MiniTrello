@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using MiniTrello.Api.CustomExceptions;
 using MiniTrello.Api.Models;
+using MiniTrello.Data;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
 
@@ -13,8 +14,8 @@ namespace MiniTrello.Api.Controllers.Helpers
 {
     public static class Security
     {
-        public static string CreateToken(Account account)
-        {
+        public static string CreateToken(Account account,IReadOnlyRepository readOnlyRepository)
+        {   
             SimpleAES myAES = new SimpleAES();
             int random = RandomHelper.Instance.Next();
             long tokenSeed = account.Id.GetHashCode() + random;
@@ -72,5 +73,19 @@ namespace MiniTrello.Api.Controllers.Helpers
             if (account != null) return account;
             throw new BadRequestException("The account you are trying to reach does not exist in this server");
         }
+
+        /*public static Session CreateSession(AccountLoginModel model)
+        {
+            string token = 
+            Session session = new Session
+            {
+                SessionAccount = account,
+                Token = token,
+                DateStarted = DateTime.UtcNow,
+                Duration = sessionDuration
+            };
+
+            return session;
+        }*/
     }
 }

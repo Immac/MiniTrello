@@ -85,7 +85,7 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(lane);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
-
+        
         //Can restore files too by setting "IsArchived to false"
         [DELETE("boards/delete/{token}")]
         public HttpResponseMessage DeleteBoard([FromBody] BoardDeleteModel model, string token)
@@ -95,6 +95,8 @@ namespace MiniTrello.Api.Controllers
             Account myAccount =
                 Security.GetAccountFromSession(session, _readOnlyRepository);
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.Id);
+            if (editedBoard == null) throw new BadRequestException("The board you are trying to reach does not exist in this server");
+
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.IsArchived = model.IsArchived;
             _writeOnlyRepository.Update(editedBoard);
