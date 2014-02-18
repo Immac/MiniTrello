@@ -142,5 +142,16 @@ namespace MiniTrello.Api.Controllers
             return new HttpResponseMessage(HttpStatusCode.OK);      
         }
 
+        [GET("boards/{boardId}/{token}")]
+        public BoardModel GetBoard(long boardId,string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Board myBoard = _readOnlyRepository.GetById<Board>(boardId);
+            Security.IsThisAccountMemberOfThisBoard(myBoard,myAccount);
+            BoardModel boardModel = _mappingEngine.Map<Board,BoardModel>(myBoard);
+            return boardModel;
+        }
     }
 }
