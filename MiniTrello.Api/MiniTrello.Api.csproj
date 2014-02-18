@@ -187,6 +187,7 @@
     <Compile Include="Controllers\BoardController.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Models\CardCreateModel.cs" />
+    <Compile Include="Models\CardDeleteModel.cs" />
     <Compile Include="Models\LaneCreateModel.cs" />
     <Compile Include="Models\LaneDeleteModel.cs" />
     <Compile Include="Models\BoardDeleteModel.cs" />

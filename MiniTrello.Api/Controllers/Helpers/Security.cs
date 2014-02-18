@@ -48,7 +48,7 @@ namespace MiniTrello.Api.Controllers.Helpers
                 return;
             if (board.AdministratorAccounts.Any(adminAccount => adminAccount.Email == account.Email))
                 return;
-            throw new BadRequestException("You do not posses Administrative priviledges on this board");
+            throw new BadRequestException("You do not posses Administrative priviledges on this board, you are not a True Administrator");
         }
 
         public static void IsThisAccountMemberOfThisBoard(Board board, Account account)

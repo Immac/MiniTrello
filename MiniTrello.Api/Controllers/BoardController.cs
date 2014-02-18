@@ -55,7 +55,8 @@ namespace MiniTrello.Api.Controllers
             _writeOnlyRepository.Update(editedBoard);
 
         return new HttpResponseMessage(HttpStatusCode.OK);
-    }
+        }
+
         [POST("boards/createlane/{token}")]
         public HttpResponseMessage CreateLane([FromBody]LaneCreateModel model,string token)
         {
@@ -75,10 +76,10 @@ namespace MiniTrello.Api.Controllers
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
-            var myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            var lane = _readOnlyRepository.First<Lane>(lane1 => lane1.Id == model.LaneId);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Lane lane = _readOnlyRepository.First<Lane>(lane1 => lane1.Id == model.LaneId);
             if (lane == null) throw new BadRequestException("Lane Id does not match any existing lanes");
-            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(lane));
+            Board editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(lane));
             if (editedBoard == null) throw new BadRequestException("This lane is not owned by any board");
             Security.IsThisAccountMemberOfThisBoard(editedBoard, myAccount);
             lane.IsArchived = model.IsArchived;
@@ -100,6 +101,18 @@ namespace MiniTrello.Api.Controllers
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.IsArchived = model.IsArchived;
             _writeOnlyRepository.Update(editedBoard);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        [DELETE("boards/deleteCard/{token}")]
+        public HttpResponseMessage DeleteCard([FromBody] CardDeleteModel model, string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Card card = _readOnlyRepository.First<Card>(card1 => card1.Id == model.CardId);
+            if (card == null) throw new BadRequestException("The card you are trying to reach does not exist in this server");
+            _writeOnlyRepository.Archive(card);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
