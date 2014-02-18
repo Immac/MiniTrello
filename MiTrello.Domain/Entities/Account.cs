@@ -10,12 +10,16 @@ namespace MiniTrello.Domain.Entities
         public virtual string LastName { get; set; }
         public virtual string Email { get; set; }
         public virtual string Password { get; set; }
-
+        
         public virtual IEnumerable<Board> Boards
         {
             get { return _boards; }
         }
 
+        public virtual IEnumerable<Organization> Organizations
+        {
+            get { return _organizations; }
+        }
 
         public virtual long Id { get; set; }
         public virtual bool IsArchived { get; set; }
@@ -30,7 +34,6 @@ namespace MiniTrello.Domain.Entities
         public virtual void AddOrganization(Organization organization)
         {
             if (_organizations.Contains(organization)) return;
-            organization.OwnerAccount = this;
             _organizations.Add(organization);
         }
     }

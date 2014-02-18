@@ -33,7 +33,7 @@ namespace MiniTrello.Api.Controllers
             
             Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
             Organization newOrganization = _writeOnlyRepository.Create(organization);
-            myAccount.AddOrganization(organization);
+            myAccount.AddOrganization(newOrganization);
             _writeOnlyRepository.Update(myAccount);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

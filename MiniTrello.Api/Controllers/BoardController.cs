@@ -27,7 +27,7 @@ namespace MiniTrello.Api.Controllers
             _mappingEngine = mappingEngine;
         }
         
-        [POST("/boards/rename/{token}")]
+        [POST("boards/rename/{token}")]
         public HttpResponseMessage RenameBoard([FromBody] BoardChangeTitleModel boardRenameModel, string token)
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
