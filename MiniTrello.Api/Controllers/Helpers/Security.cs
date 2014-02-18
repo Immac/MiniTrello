@@ -74,18 +74,13 @@ namespace MiniTrello.Api.Controllers.Helpers
             throw new BadRequestException("The account you are trying to reach does not exist in this server");
         }
 
-        /*public static Session CreateSession(AccountLoginModel model)
+        public static string CreateRestoreToken(string email)
         {
-            string token = 
-            Session session = new Session
-            {
-                SessionAccount = account,
-                Token = token,
-                DateStarted = DateTime.UtcNow,
-                Duration = sessionDuration
-            };
-
-            return session;
-        }*/
+            SimpleAES myAES = new SimpleAES();
+            int random = RandomHelper.Instance.Next();
+            long tokenSeed = email.GetHashCode() + random;
+            string token = myAES.EncryptToString(tokenSeed.ToString(CultureInfo.InvariantCulture));
+            return token;
+        }
     }
 }
