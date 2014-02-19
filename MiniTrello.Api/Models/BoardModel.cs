@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.Helpers;
 using System.Web.Script.Serialization;
@@ -18,17 +20,30 @@ namespace MiniTrello.Api.Models
         public bool IsArchived { get; set; }
         public virtual string LanesString
         {
-            get { return oSerializer.Serialize(Lanes); }
+            get
+            {
+                string returnString = _lanes.Aggregate("", (current, lane) => current + lane.Id.ToString(CultureInfo.InvariantCulture));
+                return oSerializer.Serialize(returnString);
+            }
         }
         public virtual string AdministratorAccountsString
         {
-            get { return oSerializer.Serialize(AdministratorAccounts); }
+            get
+            {
+                string returnString = _administratorAccounts.Aggregate("", (current, adminAccount) => current +adminAccount.Email);
+                return oSerializer.Serialize(returnString);
+                
+            }
         }
         public virtual string MemberAccountsString
         {
-            get { return oSerializer.Serialize(MemberAccounts); }
+            get
+            {
+                string retrunString = _memberAccounts.Aggregate("", (current, memberAccount) => current + memberAccount.Email);
+                return oSerializer.Serialize(retrunString);
+            }
         }
-
+        /*
         public virtual IEnumerable<Lane> Lanes
         {
             get { return _lanes; }
@@ -40,6 +55,25 @@ namespace MiniTrello.Api.Models
         public virtual IEnumerable<Account> MemberAccounts
         {
             get { return _memberAccounts; }
+        }*/
+
+        public virtual void AddLane(Lane lane)
+        {
+            if(!_lanes.Contains(lane))
+            _lanes.Add(lane);
+        }
+        public virtual void AddMemberAccount(Account member)
+        {
+            if(!_memberAccounts.Contains(member))
+            _memberAccounts.Add(member);
+        }
+
+        public virtual void AddAdministratorAccount(Account administraror)
+        {
+            if (!_administratorAccounts.Contains(administraror))
+            {
+                _memberAccounts.Add(administraror);
+            }
         }
                 
     }
