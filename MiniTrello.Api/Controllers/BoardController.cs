@@ -3,11 +3,8 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Principal;
-using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Script.Serialization;
-using System.Web.UI;
 using AttributeRouting.Web.Http;
 using AutoMapper;
 using MiniTrello.Api.Controllers.Helpers;
@@ -42,7 +39,7 @@ namespace MiniTrello.Api.Controllers
             Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.Title = boardRenameModel.Title;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " RenameBoard " + boardRenameModel.Title;
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " RenameBoard " + boardRenameModel.Title + " ";
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -59,7 +56,7 @@ namespace MiniTrello.Api.Controllers
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
             Security.IsThisAccountMemberOfThisBoard(editedBoard, account);
             lane.AddCard(card);
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateCArd " + card.Id;
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateCArd " + card.Id + " ";
             _writeOnlyRepository.Update(editedBoard);
 
         return new HttpResponseMessage(HttpStatusCode.OK);
@@ -75,7 +72,7 @@ namespace MiniTrello.Api.Controllers
             Security.IsThisAccountMemberOfThisBoard(editedBoard,myAccount);
             Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
             editedBoard.AddLane(newLane);
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateLane " + newLane.Id;
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateLane " + newLane.Id + " ";
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -96,7 +93,7 @@ namespace MiniTrello.Api.Controllers
             newLane.AddCard(card);
             oldLane.RemoveCard(card);
             board.Log = board.Log + myAccount.FirstName + " MoveCard " + card.Id + " to lane " +
-                        newLane.Id.ToString(CultureInfo.InvariantCulture);
+                        newLane.Id.ToString(CultureInfo.InvariantCulture) + " ";
             _writeOnlyRepository.Update(myAccount);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -113,7 +110,7 @@ namespace MiniTrello.Api.Controllers
             if (editedBoard == null) throw new BadRequestException("This lane is not owned by any board");
             Security.IsThisAccountMemberOfThisBoard(editedBoard, myAccount);
             lane.IsArchived = model.IsArchived;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " DeleteLane " + lane.Id;
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " DeleteLane " + lane.Id + " ";
             _writeOnlyRepository.Update(lane);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -131,7 +128,7 @@ namespace MiniTrello.Api.Controllers
 
             Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
             editedBoard.IsArchived = model.IsArchived;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " deleteBoard " + editedBoard.Id.ToString(CultureInfo.InvariantCulture);
+            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " deleteBoard " + editedBoard.Id.ToString(CultureInfo.InvariantCulture) + " ";
             _writeOnlyRepository.Update(editedBoard);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -146,7 +143,7 @@ namespace MiniTrello.Api.Controllers
             if (card == null) throw new BadRequestException("The card you are trying to reach does not exist in this server");
             Lane myLane = _readOnlyRepository.First<Lane>(lane => lane.Cards.Contains(card));
             Board myBoard = _readOnlyRepository.First<Board>(board => board.Lanes.Contains(myLane));
-            myBoard.Log = myBoard.Log + myAccount.FirstName + " deleteCard " + card.Id.ToString(CultureInfo.InvariantCulture);
+            myBoard.Log = myBoard.Log + myAccount.FirstName + " deleteCard " + card.Id.ToString(CultureInfo.InvariantCulture) + " ";
             _writeOnlyRepository.Update(myBoard);
             _writeOnlyRepository.Archive(card);
             return new HttpResponseMessage(HttpStatusCode.OK);
@@ -162,7 +159,7 @@ namespace MiniTrello.Api.Controllers
             Session session = Security.VerifiySession(accessToken,_readOnlyRepository);
             Security.IsTokenExpired(session);
             Account myAccount = Security.GetAccountFromSession(session,_readOnlyRepository);
-            board.Log = board.Log + myAccount.FirstName + " addMember " + memberToAdd.FirstName;
+            board.Log = board.Log + myAccount.FirstName + " addMember " + memberToAdd.FirstName + " ";
             board.AddMemberAccount((memberToAdd));
             Board updatedBoard = _writeOnlyRepository.Update(board);
             BoardModel boardModel = _mappingEngine.Map<Board, BoardModel>(updatedBoard);
@@ -194,7 +191,36 @@ namespace MiniTrello.Api.Controllers
             Board myBoard = _readOnlyRepository.GetById<Board>(boardId);
             Security.IsThisAccountMemberOfThisBoard(myBoard,myAccount);
             BoardModel boardModel = _mappingEngine.Map<Board,BoardModel>(myBoard);
+            List<Account> myMemberList = myBoard.MemberAccounts.ToList();
+            List<Account> myAdminsList = myBoard.AdministratorAccounts.ToList();
+            List<Lane> myLanesList = myBoard.Lanes.ToList();
+            foreach (var account in myMemberList)
+            {
+                boardModel.AddMemberAccount(account);
+            }
+            foreach (var account in myAdminsList)
+            {
+                boardModel.AddAdministratorAccount(account);
+            }
+            foreach (var lane in myLanesList)
+            {
+                boardModel.AddLane(lane);
+            }
+
+            return boardModel;
+        }
+
+        [GET("boards/{boardId}/log/{token}")]
+        public BoardLogModel GetBoardLog(long boardId, string token)
+        {
+            Session session = Security.VerifiySession(token, _readOnlyRepository);
+            Security.IsTokenExpired(session);
+            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            Board myBoard = _readOnlyRepository.GetById<Board>(boardId);
+            Security.IsThisAccountMemberOfThisBoard(myBoard, myAccount);
+            BoardLogModel boardModel = _mappingEngine.Map<Board, BoardLogModel>(myBoard);
             
+
             return boardModel;
         }
 
@@ -213,6 +239,11 @@ namespace MiniTrello.Api.Controllers
                 {MembersList = oSerializer.Serialize(myMemberNamesList)};
             return myModel;
         }
+    }
+
+    public class BoardLogModel
+    {
+        public string Log { set; get; }
     }
 
     public class CardMoveModel

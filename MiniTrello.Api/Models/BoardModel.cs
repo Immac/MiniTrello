@@ -22,8 +22,8 @@ namespace MiniTrello.Api.Models
         {
             get
             {
-                string returnString = _lanes.Aggregate("", (current, lane) => current + lane.Id.ToString(CultureInfo.InvariantCulture));
-                return oSerializer.Serialize(returnString);
+                //string returnString = _lanes.Aggregate("", (current, lane) => current + lane.Id.ToString(CultureInfo.InvariantCulture));
+                return oSerializer.Serialize(_lanes);
             }
         }
         public virtual string AdministratorAccountsString
