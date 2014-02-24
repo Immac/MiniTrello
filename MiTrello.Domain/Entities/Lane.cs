@@ -9,6 +9,8 @@ namespace MiniTrello.Domain.Entities
         public virtual long Id { get; set; }
         public virtual bool IsArchived { get; set; }
 
+        public virtual string Name { get; set; }
+
         private readonly IList<Card> _cards = new List<Card>();
 
         public virtual IEnumerable<Card> Cards

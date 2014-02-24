@@ -60,13 +60,17 @@ namespace MiniTrello.Api.Controllers
        
 
         [POST("register")]
-        public HttpResponseMessage Register([FromBody] AccountRegisterModel model)
+        public RegisterConfirmationModel Register([FromBody] AccountRegisterModel model)
         {
             string errorMessage = new ValidationHelper().Validate(model);
             if (errorMessage.Length > 0) throw new BadRequestException(errorMessage);
             Account account = _mappingEngine.Map<AccountRegisterModel,Account>(model);
             Account accountCreated = _writeOnlyRepository.Create(account);
-            if (accountCreated != null) return new HttpResponseMessage(HttpStatusCode.OK);
+            if (accountCreated != null)
+                return new RegisterConfirmationModel()
+                {
+                    Message = "Account confirmation message will be sent to " + model.Email
+                };
             throw new BadRequestException("There has been an error while trying to add this user");
         }
 
@@ -77,14 +81,17 @@ namespace MiniTrello.Api.Controllers
             Security.IsTokenExpired(session);
             Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
             List<Board> myBoardsList = myAccount.Boards.ToList();
-            List<string> myBoardNamesList = myBoardsList.Select(board => (board.Title) + " " + (board.Id)).ToList();
-            JavaScriptSerializer oSerializer = new JavaScriptSerializer();
-            GetBoardsModel myModel= new GetBoardsModel{ Boards = oSerializer.Serialize(myBoardNamesList) };
+            GetBoardsModel myModel = new GetBoardsModel();
+            foreach (var board in myBoardsList)
+            {
+                BoardModel myBoardModel = _mappingEngine.Map<Board,BoardModel>(board);
+                myModel.AddBoard(myBoardModel);
+            }
             return myModel;
         }
 
         [POST("restorepassword")]
-        public HttpResponseMessage RestorePassword(PasswordRestoreModel model)
+        public RestorePasswordModel RestorePassword(PasswordRestoreModel model)
         {
             RegexUtilities.IsValidEmail(model.Email);
             String token = Security.CreateRestoreToken(model.Email);
@@ -98,9 +105,9 @@ namespace MiniTrello.Api.Controllers
             };
             Session sessionCreated = _writeOnlyRepository.Create(newSession);
             //send token to email.
-            var returnValue = new HttpResponseMessage
+            var returnValue = new RestorePasswordModel
             {
-                ReasonPhrase = "Instructions on password reset have been sent to your Email"
+                Message = "Instructions on password reset have been sent to your Email"
             };
             return returnValue;
         }
@@ -108,7 +115,7 @@ namespace MiniTrello.Api.Controllers
 
         [AcceptVerbs(new[] { "PUT" })]
         [PUT("profile/edit/{token}")]
-        public HttpResponseMessage EditProfile([FromBody] AccountEditModel model, string token)
+        public EditedProfileModel EditProfile([FromBody] AccountEditModel model, string token)
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);
             Security.IsTokenExpired(session);
@@ -119,7 +126,8 @@ namespace MiniTrello.Api.Controllers
             myAccount.LastName = model.LastName;
             myAccount.Password = model.Password;
             _writeOnlyRepository.Update(myAccount);
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            EditedProfileModel myEditedProfileModel = _mappingEngine.Map<Account, EditedProfileModel>(myAccount);
+            return myEditedProfileModel;
         }
 
 
@@ -156,6 +164,19 @@ namespace MiniTrello.Api.Controllers
         }
     }
 
+    public class EditedProfileModel
+    {
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class RestorePasswordModel
+    {
+        public string Message { get; set; }
+    }
+
     public class PasswordRestoreModel
     {
         public string Email { set; get; }
@@ -163,15 +184,17 @@ namespace MiniTrello.Api.Controllers
 
     public class GetBoardsModel
     {
-        public string Boards { set; get; }
-    }
+        private readonly List<BoardModel> _boards = new List<BoardModel>();
 
-    public class AccountEditModel
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
+        public IEnumerable<BoardModel> Boards
+        {
+            get { return _boards; }
+        }
+
+        public void AddBoard(BoardModel board)
+        {
+            _boards.Add(board);
+        }
     }
 }
 

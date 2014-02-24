@@ -187,8 +187,12 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BoardController.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
+    <Compile Include="Models\AccountEditModel.cs" />
+    <Compile Include="Models\AccountModel.cs" />
+    <Compile Include="Models\BoardTitleModel.cs" />
     <Compile Include="Models\CardCreateModel.cs" />
     <Compile Include="Models\CardDeleteModel.cs" />
+    <Compile Include="Models\CardModel.cs" />
     <Compile Include="Models\LaneCreateModel.cs" />
     <Compile Include="Models\LaneDeleteModel.cs" />
     <Compile Include="Models\BoardDeleteModel.cs" />
@@ -201,6 +205,10 @@
     <Compile Include="CustomExceptions\BadRequestException.cs" />
     <Compile Include="Models\BoardModel.cs" />
     <Compile Include="Models\BoardChangeTitleModel.cs" />
+    <Compile Include="Models\LaneModel.cs" />
+    <Compile Include="Models\OrganizationModel.cs" />
+    <Compile Include="Models\OrganizationNameModel.cs" />
+    <Compile Include="Models\RegisterConfirmationModel.cs" />
     <Compile Include="Other\RegexUtilities.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using AutoMapper;
 using MiniTrello.Api.Controllers;
 using MiniTrello.Api.Models;
@@ -20,9 +21,18 @@ namespace MiniTrello.Api
             Mapper.CreateMap<OrganizationCreateModel, Organization>().ReverseMap();
             Mapper.CreateMap<Board, BoardModel>().ReverseMap();
             Mapper.CreateMap<Board, BoardLogModel>().ReverseMap();
+            Mapper.CreateMap<Board, BoardTitleModel>().ReverseMap();
+            Mapper.CreateMap<EditedProfileModel, Account>().ReverseMap();
+            Mapper.CreateMap<Account, AccountModel>().ReverseMap();
+            Mapper.CreateMap<Lane,LaneModel>().ReverseMap();
+            Mapper.CreateMap<Card, CardModel>().ReverseMap();
+            Mapper.CreateMap<Organization, OrganizationModel>().ReverseMap();
+            Mapper.CreateMap<Organization, OrganizationNameModel>().ReverseMap();
+            
             //Mapper.CreateMap<DemographicsEntity, DemographicsModel>().ReverseMap();
             //Mapper.CreateMap<IReportEntity, IReportModel>()
             //    .Include<DemographicsEntity, DemographicsModel>();
         }
     }
+
 }

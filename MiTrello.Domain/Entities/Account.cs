@@ -28,6 +28,8 @@ namespace MiniTrello.Domain.Entities
         {
             if (_boards.Contains(board)) return;
             board.OwnerAccount = this;
+            board.AddAdministratorAccount(this);
+            board.AddMemberAccount(this);
             _boards.Add(board);
         }
 

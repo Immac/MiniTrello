@@ -82,5 +82,6 @@ namespace MiniTrello.Api.Controllers.Helpers
             string token = myAES.EncryptToString(tokenSeed.ToString(CultureInfo.InvariantCulture));
             return token;
         }
+
     }
 }

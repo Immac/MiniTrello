@@ -10,71 +10,42 @@ namespace MiniTrello.Api.Models
 {
     public class BoardModel
     {
-        JavaScriptSerializer oSerializer = new JavaScriptSerializer();
-        private readonly IList<Lane> _lanes = new List<Lane>();
-        private readonly IList<Account> _memberAccounts = new List<Account>();
-        private readonly IList<Account> _administratorAccounts = new List<Account>();
+        private readonly List<LaneModel> _lanes = new List<LaneModel>();
+        private readonly List<AccountModel> _memberAccounts = new List<AccountModel>();
+        private readonly List<AccountModel> _administratorAccounts = new List<AccountModel>();
         public string Log { set; get; }
         public long Id { get; set; }
         public string Title { get; set; }
         public bool IsArchived { get; set; }
-        public virtual string LanesString
-        {
-            get
-            {
-                //string returnString = _lanes.Aggregate("", (current, lane) => current + lane.Id.ToString(CultureInfo.InvariantCulture));
-                return oSerializer.Serialize(_lanes);
-            }
-        }
-        public virtual string AdministratorAccountsString
-        {
-            get
-            {
-                string returnString = _administratorAccounts.Aggregate("", (current, adminAccount) => current +adminAccount.Email);
-                return oSerializer.Serialize(returnString);
-                
-            }
-        }
-        public virtual string MemberAccountsString
-        {
-            get
-            {
-                string retrunString = _memberAccounts.Aggregate("", (current, memberAccount) => current + memberAccount.Email);
-                return oSerializer.Serialize(retrunString);
-            }
-        }
-        /*
-        public virtual IEnumerable<Lane> Lanes
+        public string Name { get; set; }
+        
+        public List<LaneModel> Lanes
         {
             get { return _lanes; }
         }
-        public virtual IEnumerable<Account> AdministratorAccounts
+        public List<AccountModel> AdministratorAccounts
         {
             get { return _administratorAccounts; }
         }
-        public virtual IEnumerable<Account> MemberAccounts
+        public List<AccountModel> MemberAccounts
         {
             get { return _memberAccounts; }
-        }*/
+        }
 
-        public virtual void AddLane(Lane lane)
+        public void AddLane(LaneModel lane)
         {
-            if(!_lanes.Contains(lane))
             _lanes.Add(lane);
         }
-        public virtual void AddMemberAccount(Account member)
+
+        public void AddMemberAccount(AccountModel memberAccount)
         {
-            if(!_memberAccounts.Contains(member))
-            _memberAccounts.Add(member);
+            _memberAccounts.Add(memberAccount);
         }
 
-        public virtual void AddAdministratorAccount(Account administraror)
+        public void AddAdmininstratorAccount(AccountModel administratorAccount)
         {
-            if (!_administratorAccounts.Contains(administraror))
-            {
-                _memberAccounts.Add(administraror);
-            }
+            _administratorAccounts.Add(administratorAccount);
         }
-                
+       
     }
 }
