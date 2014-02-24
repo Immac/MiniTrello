@@ -58,6 +58,7 @@ namespace MiniTrello.Api.Controllers
             Security.IsThisAccountMemberOfThisBoard(editedBoard, account);
             lane.AddCard(card);
             editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateCArd " + card.Id + " ";
+            card = _writeOnlyRepository.Update(card);
             _writeOnlyRepository.Update(editedBoard);
             return _mappingEngine.Map<Card, CardModel>(card);
         }
@@ -75,6 +76,7 @@ namespace MiniTrello.Api.Controllers
             Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
             editedBoard.AddLane(newLane);
             editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateLane " + newLane.Id + " ";
+            newLane = _writeOnlyRepository.Update(newLane);
             _writeOnlyRepository.Update(editedBoard);
             return _mappingEngine.Map<Lane, LaneModel>(newLane);
         }
@@ -114,6 +116,7 @@ namespace MiniTrello.Api.Controllers
             lane.IsArchived = model.IsArchived;
             editedBoard.Log = editedBoard.Log + myAccount.FirstName + " DeleteLane " + lane.Id + " ";
             _writeOnlyRepository.Update(lane);
+            editedBoard = _writeOnlyRepository.Update(editedBoard);
             return _mappingEngine.Map<Board, BoardModel>(editedBoard);
         }
         
@@ -155,6 +158,7 @@ namespace MiniTrello.Api.Controllers
             myBoard.Log = myBoard.Log + myAccount.FirstName + " deleteCard " + card.Id.ToString(CultureInfo.InvariantCulture) + " ";
             _writeOnlyRepository.Update(myBoard);
             _writeOnlyRepository.Archive(card);
+            myLane = _writeOnlyRepository.Update(myLane);
             return _mappingEngine.Map<Lane, LaneModel>(myLane);
         }
 
