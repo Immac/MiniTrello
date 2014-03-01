@@ -6,6 +6,6 @@
 /// <reference path="vendor/angular-resource.js" />
 /// <reference path="vendor/angular-route.js" />
 /// <reference path="vendor/angular-sanitize.js" />
-// <reference path="vendor/angular-scenario.js" />
+/// <reference path="vendor/angular-scenario.js" />
 /// <reference path="vendor/angular-touch.js" />
 /// <reference path="vendor/jasmine.js" />

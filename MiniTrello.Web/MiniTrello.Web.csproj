@@ -144,20 +144,21 @@
     <Content Include="Content\app.less" />
     <Content Include="Content\variables.less" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\controllers.js" />
-    <Content Include="Scripts\controllers.spec.js">
-      <DependentUpon>controllers.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\directives.js" />
-    <Content Include="Scripts\directives.spec.js">
+    <Content Include="Scripts\Controllers\AboutController.js" />
+    <Content Include="Scripts\Controllers\AccountController.js" />
+    <Content Include="Scripts\Controllers\ErrorController.js" />
+    <Content Include="Scripts\Controllers\HomeController.js" />
+    <Content Include="Scripts\Directives\directives.js" />
+    <Content Include="Scripts\Directives\directives.spec.js">
       <DependentUpon>directives.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\filters.js" />
-    <Content Include="Scripts\filters.spec.js">
+    <Content Include="Scripts\Filters\filters.js" />
+    <Content Include="Scripts\Filters\filters.spec.js">
       <DependentUpon>filters.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\services.js" />
-    <Content Include="Scripts\services.spec.js">
+    <Content Include="Scripts\Services\AccountServices.js" />
+    <Content Include="Scripts\Services\services.js" />
+    <Content Include="Scripts\Services\services.spec.js">
       <DependentUpon>services.js</DependentUpon>
     </Content>
     <Content Include="Scripts\vendor\angular-csp.css" />

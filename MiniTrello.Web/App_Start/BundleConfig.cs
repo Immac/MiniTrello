@@ -16,15 +16,25 @@ namespace App.MiniTrello.Web
         {
             bundles.Add(new StyleBundle("~/content/css/app").Include("~/content/app.css"));
 
-            bundles.Add(new ScriptBundle("~/js/jquery").Include("~/scripts/vendor/jquery-{version}.js"));
+            //bundles.Add(new ScriptBundle("~/js/jquery").Include("~/scripts/vendor/jquery-{version}.js"));
+
+            bundles.Add(new ScriptBundle("~/js/vendors").Include(
+                "~/scripts/vendor/jquery-2.0.3.js",
+                "~/scripts/vendor/angular.js"));
 
             bundles.Add(new ScriptBundle("~/js/app").Include(
                 "~/scripts/vendor/angular-ui-router.js",
-                "~/scripts/filters.js",
-                "~/scripts/services.js",
-                "~/scripts/directives.js",
-                "~/scripts/controllers.js",
+                "~/scripts/Filters/filters.js",
+                "~/scripts/Services/services.js",
+                "~/scripts/Services/AccountServices.js",
+                "~/scripts/Directives/directives.js",
+                "~/scripts/Controllers/HomeController.js",
+                "~/scripts/Controllers/AboutController.js",
+                "~/scripts/Controllers/ErrorController.js",
+               
+                "~/scripts/Controllers/AccountController.js",
                 "~/scripts/app.js"));
+
         }
     }
 }

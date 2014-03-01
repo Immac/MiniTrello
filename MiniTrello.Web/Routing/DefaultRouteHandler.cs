@@ -20,7 +20,7 @@ namespace App.MiniTrello.Web.Routing
             //     ~/about       -> ~/views/about.cshtml or ~/views/about/index.cshtml
             //     ~/views/about -> ~/views/about.cshtml
             //     ~/xxx         -> ~/views/404.cshtml
-            string filePath = requestContext.HttpContext.Request.AppRelativeCurrentExecutionFilePath;
+            var filePath = requestContext.HttpContext.Request.AppRelativeCurrentExecutionFilePath;
 
             if (filePath == "~/")
             {
@@ -39,7 +39,7 @@ namespace App.MiniTrello.Web.Routing
                 }
             }
 
-            IHttpHandler handler = WebPageHttpHandler.CreateFromVirtualPath(filePath); // returns NULL if .cshtml file wasn't found
+            var handler = WebPageHttpHandler.CreateFromVirtualPath(filePath); // returns NULL if .cshtml file wasn't found
 
             if (handler == null)
             {
