@@ -22,10 +22,23 @@ angular.module('app.controllers')
         };
 
     $scope.register = function() {
-
+        var model = {
+            FirstName: $scope.FirstName,
+            LastName: $scope.LastName,
+            Email: $scope.Email,
+            Password: $scope.Password,
+            ConfirmPassword: $scope.ConfirmPassword
+        };
+        AccountServices.register(model);
+        return false;
     };
 
         $scope.$on('$viewContentLoaded', function () {
             $window.ga('send', 'pageview', { 'page': $location.path(), 'title': $scope.$root.title });
         });
-    }]);
+    }
+
+
+
+
+    ]);
