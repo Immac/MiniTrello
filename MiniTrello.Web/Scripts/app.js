@@ -32,6 +32,12 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
                 templateUrl: '/views/login',
                 controller: 'AccountController'
             })
+            .state('register', {
+                url: '/register',
+                layout: 'basic',
+                templateUrl: '/views/register',
+                controller: 'AccountController'
+            })
             .state('otherwise', {
                 url: '*path',
                 templateUrl: '/views/404',

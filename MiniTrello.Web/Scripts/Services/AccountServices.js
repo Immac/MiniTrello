@@ -5,9 +5,12 @@ angular.module('app.services',[]).factory('AccountServices', ['$http', function 
     var account = {};
 
     account.login = function (data) {
-        return $http.post('http://minitrelloapi.apphb.com/login', data);
+        return $http.post('http://mcminitrelloapi.apphb.com/login', data);
     };
 
+    account.register = function(data) {
+        return $http.post('http://mcminitrelloapi.apphb.com/register', data);
+    };
 
     return account;
 

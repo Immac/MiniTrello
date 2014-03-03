@@ -5,17 +5,12 @@
 
 angular.module('app.controllers')
 
-  
-
     // Path: /login
-    .controller('AccountController', ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices) {
-
-        
-
+    .controller('AccountController',
+    ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices)
+    {
         $scope.$root.title = 'AngularJS SPA | Sign In';
-
         $scope.Email = "";
-
         $scope.Password = "";
 
         // TODO: Authorize a user

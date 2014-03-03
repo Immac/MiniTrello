@@ -20,7 +20,7 @@ namespace MiniTrello.Infrastructure
         public void Run()
         {
             MsSqlConfiguration databaseConfiguration = MsSqlConfiguration.MsSql2008.ShowSql().
-                ConnectionString(x => x.FromConnectionStringWithKey("MiniTrello.Remote"));
+                ConnectionString(x => x.FromConnectionStringWithKey("MiniTrello.Local"));
 
             container.Register(c => c.Resolve<ISessionFactory>().OpenSession()).As
                 <ISession>()
