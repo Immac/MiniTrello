@@ -27,6 +27,8 @@ namespace MiniTrello.Api
             //RouteConfig.RegisterRoutes(RouteTable.Routes);
             BuildContainer();
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new CorsHandler()); 
         }
 
         public IContainer BuildContainer()
