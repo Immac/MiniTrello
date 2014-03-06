@@ -10,28 +10,48 @@ angular.module('app.controllers')
     ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices)
     {
         $scope.$root.title = 'AngularJS SPA | Sign In';
-        $scope.Email = "";
-        $scope.Password = "";
-
+        $scope.loginModel = { Email: '', Password: '' };
+        $scope.registerModel = {
+            Email: '', Password: '',
+            FirstName: '', LastName: '',
+            ConfirmPassword: ''
+        };
         // TODO: Authorize a user
         $scope.login = function () {
-            var model = { Email: $scope.Email, Password: $scope.Password };
-            AccountServices.login(model);
-            //$location.path('/');
-            return false;
+            AccountServices
+                .login($scope.loginModel)
+                .success(function(data, status, headers, config) {
+                    $window.sessionStorage.tokens = data.tokens;
+                })
+                .error(function(data, status, headersconfig) {
+                    delete $window.sessionStorage.token;
+
+                    $scope.message = 'Error: Invalide username or password';
+                });
+            $location.path('/');
         };
 
     $scope.register = function() {
-        var model = {
-            FirstName: $scope.FirstName,
-            LastName: $scope.LastName,
-            Email: $scope.Email,
-            Password: $scope.Password,
-            ConfirmPassword: $scope.ConfirmPassword
-        };
-        AccountServices.register(model);
+
+        AccountServices.register($scope.registerModel)
+            .success(function(data, status, headers, config) {
+                console.log(data);
+            })
+            .error(function(data, status, headers, config) {
+                console.log(data);
+            });
+        
         return false;
     };
+
+        $scope.goToRegister = function() {
+            $location.path('/register');
+            return false;
+        };
+        $scope.goToLogin = function() {
+            $location.path('/login');
+            return false;
+        };
 
         $scope.$on('$viewContentLoaded', function () {
             $window.ga('send', 'pageview', { 'page': $location.path(), 'title': $scope.$root.title });
