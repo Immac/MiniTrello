@@ -3,17 +3,19 @@
 angular.module('app.services',[]).factory('AccountServices', ['$http', function ($http) {
 
     var account = {};
+
     var baseRemoteUrl = "http://mcminitrelloapi.apphb.com";
     var baseLocalUrl = "http://localhost:8080";
-    var baseUrl = baseRemoteUrl;
+    var baseUrl = baseLocalUrl;
 
-    account.login = function (data) {
-        return $http.post(baseUrl + '/login', data);
+    account.login = function (model) {
+        return $http.post(baseUrl + '/login', model);
     };
 
-    account.register = function(data) {
-        return $http.post(baseUrl +  '/register', data);
+    account.register = function (model) {
+        return $http.post(baseUrl + '/register', model);
     };
+
 
     return account;
 

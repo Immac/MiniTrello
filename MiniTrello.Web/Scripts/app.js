@@ -10,10 +10,11 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
         // UI States, URL Routing & Mapping. For more info see: https://github.com/angular-ui/ui-router
         // ------------------------------------------------------------------------------------------------------------
 
-        $httpProvider.defaults.headers.common = {};
-        $httpProvider.defaults.headers.post = {};
-        $httpProvider.defaults.headers.put = {};
-        $httpProvider.defaults.headers.patch = {};
+        $httpProvider.defaults.headers.common = { 'Content-Type': 'application/json' };
+        $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json' };
+        $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json' };
+        $httpProvider.defaults.headers.patch = { 'Content-Type': 'application/json' };
+        $httpProvider.defaults.headers.get = { 'Content-Type': 'application/json' };
 
         $stateProvider
             .state('home', {
@@ -38,7 +39,6 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
                 templateUrl: '/views/register',
                 controller: 'AccountController'
             })
-            
             .state('otherwise', {
                 url: '*path',
                 templateUrl: '/views/404',
