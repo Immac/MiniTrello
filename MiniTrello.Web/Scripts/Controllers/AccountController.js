@@ -10,6 +10,9 @@ angular.module('app.controllers')
     // Path: /login
     .controller('AccountController', ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices) {
 
+        $scope.isLogged = function() {
+            return $window.sessionStorage.token != null;
+        };
         
         $scope.loginModel = { Email: '', Password: '' };
 
@@ -21,17 +24,18 @@ angular.module('app.controllers')
             AccountServices
                 .login($scope.loginModel)
               .success(function (data, status, headers, config) {
-                  console.log(data);
+                  
                   $window.sessionStorage.token = data.Token;
-                  console.log($window.sessionStorage.token);
+                  $location.path('/boards');
               })
               .error(function (data, status, headers, config) {
                 // Erase the token if the user fails to log in
                 delete $window.sessionStorage.token;
 
-                  // Handle login errors here
-                  $scope.message = 'Error: Invalid user or password';
-              });
+                // Handle login errors here
+                $scope.message = 'Error: Invalid user or password';
+            });
+            //$location.path('/');
         };
 
     $scope.goToRegister = function() {
