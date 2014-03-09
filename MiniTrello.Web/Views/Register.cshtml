@@ -54,8 +54,12 @@
                     <button ng-click="goToLogin()" class="btn btn-success btn-block btn-lg">Sign In</button>
                 </div>
             </div>
+                <div ng-show="hasError">
+                    Hello! {{errorMessage}} 
+                </div>
         </form>
     </div>
+    
 </div>
 <!-- Modal -->
 <div class="modal fade" id="t_and_c_m" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

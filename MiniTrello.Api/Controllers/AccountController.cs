@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web.Http;
 using System.Web.Script.Serialization;
+using System.Web.UI.WebControls;
 using AttributeRouting.Web.Http;
 using AutoMapper;
 using Microsoft.Ajax.Utilities;
@@ -16,6 +18,7 @@ using MiniTrello.Api.Models;
 using MiniTrello.Api.Other;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
+using RestSharp;
 
 
 namespace MiniTrello.Api.Controllers
@@ -65,13 +68,42 @@ namespace MiniTrello.Api.Controllers
             string errorMessage = new ValidationHelper().Validate(model);
             if (errorMessage.Length > 0) throw new BadRequestException(errorMessage);
             Account account = _mappingEngine.Map<AccountRegisterModel,Account>(model);
+            account.Password = encryptPassword(account.Password);            
+            
             Account accountCreated = _writeOnlyRepository.Create(account);
             if (accountCreated != null)
+            {
+                SendMail(accountCreated);
                 return new RegisterConfirmationModel()
                 {
+                    
                     Message = "Account confirmation message will be sent to " + model.Email
-                };
+                };}
             throw new BadRequestException("There has been an error while trying to add this user");
+        }
+
+        private string encryptPassword(string password)
+        {
+            SimpleAES myAES = new SimpleAES();
+            return myAES.EncryptToString(password);
+        }
+
+        private void SendMail(Account accountCreated)
+        {
+            RestClient client = new RestClient
+            {
+                BaseUrl = "https://api.mailgun.net/v2",
+                Authenticator = new HttpBasicAuthenticator("api", "key-5sbcxpwm9avrbeds-35y2i5hmda4y8k1")
+            };
+            RestRequest request = new RestRequest();
+            request.AddParameter("domain", "sandbox37840.mailgun.org", ParameterType.UrlSegment);
+            request.Resource = "{domain}/messages";
+            request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
+            request.AddParameter("to", accountCreated.FirstName + "<" + accountCreated.Email + ">");
+            request.AddParameter("subject", "Welcome");
+            request.AddParameter("text", "Welcome to MiniTrello MC!");
+            request.Method = Method.POST;
+            client.Execute(request);
         }
 
         [GET("boards/{token}")]
@@ -96,6 +128,7 @@ namespace MiniTrello.Api.Controllers
             RegexUtilities.IsValidEmail(model.Email);
             String token = Security.CreateRestoreToken(model.Email);
             Account myAccount = FindCorrespondingAccount(model.Email);
+            if (myAccount == null) throw new BadRequestException("This account was not found on this server");
             Session newSession = new Session
             {
                 SessionAccount = _readOnlyRepository.First<Account>(account => account.Email == model.Email),
@@ -134,16 +167,18 @@ namespace MiniTrello.Api.Controllers
 
         private Account FindCorrespondingAccount(AccountLoginModel model)
         {
-            var account =  _readOnlyRepository.First<Account>(
-                account1 => account1.Email == model.Email && account1.Password == model.Password);
+            SimpleAES myAES = new SimpleAES();
+            var account = _readOnlyRepository.First<Account>(
+                account1 => account1.Email == model.Email);
             if (account == null) throw new BadRequestException("Incorrect username or password");
+            var accountPassword = myAES.DecryptString(account.Password);
+            if (accountPassword != model.Password) throw new BadRequestException("Incorrect username or password");
             return account;
         }
         private Account FindCorrespondingAccount(string email)
         {
             var account = _readOnlyRepository.First<Account>(
-                account1 => account1.Email == email);
-            if (account == null) throw new BadRequestException("This account was not found on this server");
+                account1 => account1.Email == email);            
             return account;
         }
 
