@@ -4,7 +4,7 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
 
     var board = {};
 
-    var baseRemoteUrl = "http://minitrelloapi.apphb.com";
+    var baseRemoteUrl = "http://mcminitrelloapi.apphb.com/";
     var baseLocalUrl = "http://localhost:1416";
     var baseUrl = baseRemoteUrl;
 
