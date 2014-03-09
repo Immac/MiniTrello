@@ -10,6 +10,9 @@ angular.module('app.controllers')
     // Path: /login
     .controller('AccountController', ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices) {
 
+        $scope.hasError = false;
+    $scope.errorMessage = '';
+
         $scope.isLogged = function() {
             return $window.sessionStorage.token != null;
         };
@@ -32,6 +35,8 @@ angular.module('app.controllers')
                 // Erase the token if the user fails to log in
                 delete $window.sessionStorage.token;
 
+                $scope.errorMessage = 'Error o clave incorrect';
+                $scope.hasError = true;
                 // Handle login errors here
                 $scope.message = 'Error: Invalid user or password';
             });

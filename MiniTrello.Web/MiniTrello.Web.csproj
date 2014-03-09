@@ -507,6 +507,7 @@
     <Content Include="Views\About.cshtml" />
     <Content Include="Views\register.cshtml" />
     <Content Include="Views\boards.cshtml" />
+    <Content Include="Views\boardDetail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

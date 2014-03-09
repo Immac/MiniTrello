@@ -8,17 +8,23 @@ angular.module('app.controllers')
 
 
     // Path: /login
-    .controller('BoardController', ['$scope', '$location', '$window', 'BoardServices', function ($scope, $location, $window, boardServices) {
+    .controller('BoardController', ['$scope', '$location', '$window', 'BoardServices','$stateParams', function ($scope, $location, $window, boardServices, $stateParams) {
+
+
+       $scope.boardDetailId = $stateParams.boardId;
+
+        //console.log($location.search().boardId);
+
+        console.log($scope.boardDetailId);
 
         $scope.boards = [];
 
-        var board = { Name: 'Myboard1', Description: 'Description1' };
-        var board1 = { Name: 'Myboard2', Description: 'Description2' };
+        var board = { Id: 1, Name: 'Myboard1', Description: 'Description1' };
+        var board1 = { Id: 2, Name: 'Myboard2', Description: 'Description2' };
         $scope.boards.push(board);
     $scope.boards.push(board1);
         
 
-        // TODO: Authorize a user
         $scope.getBoardsForLoggedUser = function () {
 
             boardServices
@@ -27,10 +33,20 @@ angular.module('app.controllers')
                     $scope.boards = data;
                 })
               .error(function (data, status, headers, config) {
-
-              });
+                console.log(data);
+            });
             //$location.path('/');
         };
+
+    if ($scope.boardDetailId > 0)
+    {
+        //get board details
+    }
+    else
+    {
+        $scope.getBoardsForLoggedUser();
+    }
+    
 
        
 
