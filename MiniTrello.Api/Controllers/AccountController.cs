@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using AttributeRouting.Web.Http;
@@ -76,7 +77,6 @@ namespace MiniTrello.Api.Controllers
                 SendMail(accountCreated);
                 return new RegisterConfirmationModel()
                 {
-                    
                     Message = "Account confirmation message will be sent to " + model.Email
                 };}
             throw new BadRequestException("There has been an error while trying to add this user");
@@ -146,7 +146,7 @@ namespace MiniTrello.Api.Controllers
         }
 
 
-        [AcceptVerbs(new[] { "PUT" })]
+        [System.Web.Http.AcceptVerbs(new[] { "PUT" })]
         [PUT("profile/edit/{token}")]
         public EditedProfileModel EditProfile([FromBody] AccountEditModel model, string token)
         {
@@ -239,20 +239,20 @@ public class ValidationHelper : IRegisterValidator<AccountRegisterModel>
 {
     public string Validate(AccountRegisterModel model)
     {
-         if (model.Password != model.ConfirmPassword)
-    {
-        return "The password confirmation and password fields do not match";
-    }
+        if (model.Password != model.ConfirmPassword)
+        {
+            return "The password confirmation and password fields do not match";
+        }
 
-    if (model.Password.Count() < 8)
-    {
-        return "Your password must contain 8 or more characters";
-    }
-    if (!RegexUtilities.IsValidEmail(model.Email))
-    {
-        return "The email you entered is not valid, please enter a valid email.";
-    }
-    return "";
+        if (model.Password.Count() < 8)
+        {
+            return "Your password must contain 8 or more characters";
+        }
+        if (!RegexUtilities.IsValidEmail(model.Email))
+        {
+            return "The email you entered is not valid, please enter a valid email.";
+        }
+        return "";
     }
 
     public static string ValidateEditModel(AccountEditModel model)
