@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
 using AttributeRouting.Web.Http;
 using AutoMapper;
-using Microsoft.Ajax.Utilities;
-using MiniTrello.Api.Controllers;
 using MiniTrello.Api.Controllers.Helpers;
 using MiniTrello.Api.CustomExceptions;
 using MiniTrello.Api.Other;
@@ -42,23 +33,31 @@ namespace MiniTrello.Api.Controllers
         public AccountAuthenticationModel Login([FromBody] AccountLoginModel model)
         {
             var account = FindCorrespondingAccount(model);
-            var retrievedSession = RetrieveSession(account);
-            if (retrievedSession == null)
+            if (account != null)
             {
-                var token = Security.CreateToken(account, _readOnlyRepository);
-                var sessionDuration = Security.GetTokenLifeSpan(model);
-                var newSession = new Session
+                var retrievedSession = RetrieveSession(account);
+                if (retrievedSession == null)
                 {
-                    SessionAccount = account,
-                    Token = token,
-                    DateStarted = DateTime.UtcNow,
-                    Duration = sessionDuration
-                };
-                var sessionCreated = _writeOnlyRepository.Create(newSession);
-                if (sessionCreated != null) return new AccountAuthenticationModel { Token = token };
+                    var token = Security.CreateToken(account, _readOnlyRepository);
+                    var sessionDuration = Security.GetTokenLifeSpan(model);
+                    var newSession = new Session
+                    {
+                        SessionAccount = account,
+                        Token = token,
+                        DateStarted = DateTime.UtcNow,
+                        Duration = sessionDuration
+                    };
+                    var sessionCreated = _writeOnlyRepository.Create(newSession);
+                    if (sessionCreated != null) return new AccountAuthenticationModel { Token = token };
+                }
+                if (retrievedSession != null) return new AccountAuthenticationModel { Token = retrievedSession.Token };
             }
-            if (retrievedSession != null) return new AccountAuthenticationModel { Token = retrievedSession.Token };
-            throw new BadRequestException("Incorrect Username or Password!");
+            return new AccountAuthenticationModel
+            {
+                ErrorCode = 1,
+                ErrorMessage = "Invalid username or password",
+                Token = ""
+            };
         }
 
        
@@ -66,60 +65,68 @@ namespace MiniTrello.Api.Controllers
         [POST("register")]
         public RegisterConfirmationModel Register([FromBody] AccountRegisterModel model)
         {
-            string errorMessage = new ValidationHelper().Validate(model);
-            if (errorMessage.Length > 0) throw new BadRequestException(errorMessage);
-            Account account = _mappingEngine.Map<AccountRegisterModel,Account>(model);
-            account.Password = encryptPassword(account.Password);            
-            
-            Account accountCreated = _writeOnlyRepository.Create(account);
-            if (accountCreated != null)
-            {
-                SendMail(accountCreated);
-                return new RegisterConfirmationModel()
+            var errorMessage = new ValidationHelper().Validate(model);
+            if (errorMessage.Length > 0) //ERROR OCURRED
+                return new RegisterConfirmationModel
                 {
-                    Message = "Account confirmation message will be sent to " + model.Email
-                };}
-            throw new BadRequestException("There has been an error while trying to add this user");
-        }
+                    ErrorCode = 1,
+                    ErrorMessage = errorMessage,
+                    Message = ""
+                };
 
-        private string encryptPassword(string password)
-        {
-            SimpleAES myAES = new SimpleAES();
-            return myAES.EncryptToString(password);
-        }
+            var account = _mappingEngine.Map<AccountRegisterModel, Account>(model);
+            account.Password = encryptPassword(account.Password);
+            var accountCreated = _writeOnlyRepository.Create(account);
+            if (accountCreated == null) //ERROR OCURRED
+                return new RegisterConfirmationModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The Email you are trying to use is already registered.",
+                    Message = ""
+                };
 
-        private void SendMail(Account accountCreated)
-        {
-            RestClient client = new RestClient
+            SendAccountCreatedMail(accountCreated);
+            return new RegisterConfirmationModel
             {
-                BaseUrl = "https://api.mailgun.net/v2",
-                Authenticator = new HttpBasicAuthenticator("api", "key-5sbcxpwm9avrbeds-35y2i5hmda4y8k1")
+                Message = "Account confirmation message will be sent to " + model.Email
             };
-            RestRequest request = new RestRequest();
-            request.AddParameter("domain", "sandbox37840.mailgun.org", ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
-            request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
-            request.AddParameter("to", accountCreated.FirstName + "<" + accountCreated.Email + ">");
-            request.AddParameter("subject", "Welcome");
-            request.AddParameter("text", "Welcome to MiniTrello MC!");
-            request.Method = Method.POST;
-            client.Execute(request);
         }
+
+        
 
         [GET("boards/{token}")]
         public GetBoardsModel GetBoards(string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            List<Board> myBoardsList = myAccount.Boards.ToList();
-            GetBoardsModel myModel = new GetBoardsModel();
-            foreach (var board in myBoardsList)
+            GetBoardsModel getBoardsModel;
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
             {
-                BoardModel myBoardModel = _mappingEngine.Map<Board,BoardModel>(board);
-                myModel.AddBoard(myBoardModel);
+                getBoardsModel = new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The session you are trying to reach does not exist on this server."
+                };
+                return getBoardsModel;
             }
-            return myModel;
+
+            if(Security.IsTokenExpired(session))
+            {
+                getBoardsModel = new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The session you are trying to reach has expired."
+                };
+                return getBoardsModel;
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            var boardsList = accountFromSession.Boards.ToList();
+            getBoardsModel = new GetBoardsModel();
+            foreach (var board in boardsList)
+            {
+                var boardModel = _mappingEngine.Map<Board,BoardModel>(board);
+                getBoardsModel.AddBoard(boardModel);
+            }
+            return getBoardsModel;
         }
 
         [POST("restorepassword")]
@@ -164,15 +171,21 @@ namespace MiniTrello.Api.Controllers
         }
 
 
+        private string encryptPassword(string password)
+        {
+            var myAES = new SimpleAES();
+            return myAES.EncryptToString(password);
+        }
+
 
         private Account FindCorrespondingAccount(AccountLoginModel model)
         {
-            SimpleAES myAES = new SimpleAES();
+            var myAES = new SimpleAES();
             var account = _readOnlyRepository.First<Account>(
                 account1 => account1.Email == model.Email);
-            if (account == null) throw new BadRequestException("Incorrect username or password");
+            if (account == null) return null;
             var accountPassword = myAES.DecryptString(account.Password);
-            if (accountPassword != model.Password) throw new BadRequestException("Incorrect username or password");
+            if (accountPassword != model.Password) return null;
             return account;
         }
         private Account FindCorrespondingAccount(string email)
@@ -197,6 +210,23 @@ namespace MiniTrello.Api.Controllers
             }
             return session;
         }
+        private void SendAccountCreatedMail(Account accountCreated)
+        {
+            RestClient client = new RestClient
+            {
+                BaseUrl = "https://api.mailgun.net/v2",
+                Authenticator = new HttpBasicAuthenticator("api", "key-5sbcxpwm9avrbeds-35y2i5hmda4y8k1")
+            };
+            RestRequest request = new RestRequest();
+            request.AddParameter("domain", "sandbox37840.mailgun.org", ParameterType.UrlSegment);
+            request.Resource = "{domain}/messages";
+            request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
+            request.AddParameter("to", accountCreated.FirstName + "<" + accountCreated.Email + ">");
+            request.AddParameter("subject", "Welcome");
+            request.AddParameter("text", "Welcome to MiniTrello MC!");
+            request.Method = Method.POST;
+            client.Execute(request);
+        }
     }
 
     public class EditedProfileModel
@@ -220,7 +250,8 @@ namespace MiniTrello.Api.Controllers
     public class GetBoardsModel
     {
         private readonly List<BoardModel> _boards = new List<BoardModel>();
-
+        public int ErrorCode { set; get; }
+        public string ErrorMessage { set; get; }
         public IEnumerable<BoardModel> Boards
         {
             get { return _boards; }

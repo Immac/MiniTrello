@@ -1,11 +1,7 @@
 using System;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography;
 using MiniTrello.Api.CustomExceptions;
-using MiniTrello.Data;
 using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
@@ -30,16 +26,11 @@ namespace MiniTrello.Api.Controllers.Helpers
 
         public static bool IsTokenExpired(Session session)
         {
-            bool isTokenExpired = session.DateStarted.AddMinutes(session.Duration) < DateTime.UtcNow;
-            if(isTokenExpired)
-                throw new BadRequestException("Your session has expired, please log in again");
-            return false;
+            return  session.DateStarted.AddMinutes(session.Duration) < DateTime.UtcNow;
         }
         public static Session VerifiySession(string token,IReadOnlyRepository readOnlyRepository)
         {
-            Session session = readOnlyRepository.First<Session>(session1 => session1.Token == token);
-            if (session == null)
-                throw new BadRequestException("Session you are trying to reach does not exist in this server");
+            var session = readOnlyRepository.First<Session>(session1 => session1.Token == token);
             return session;
         }
         public static void IsThisAccountAdminOfThisBoard(Board board, Account account)
