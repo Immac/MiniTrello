@@ -142,7 +142,7 @@ namespace MiniTrello.Api.Controllers
             return myModel;
         }
 
-        [DELETE("boards/deleteCard/{token}")]
+        [DELETE("boards/deletecard/{token}")]
         public LaneModel DeleteCard([FromBody] CardDeleteModel model, string token)
         {
             Session session = Security.VerifiySession(token, _readOnlyRepository);

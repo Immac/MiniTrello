@@ -41,20 +41,20 @@ namespace MiniTrello.Api.Controllers
         [POST("login")]
         public AccountAuthenticationModel Login([FromBody] AccountLoginModel model)
         {
-            Account account = FindCorrespondingAccount(model);
-            Session retrievedSession = RetrieveSession(account);
+            var account = FindCorrespondingAccount(model);
+            var retrievedSession = RetrieveSession(account);
             if (retrievedSession == null)
             {
-                string token = Security.CreateToken(account, _readOnlyRepository);
-                long sessionDuration = Security.GetTokenLifeSpan(model);
-                Session newSession = new Session
+                var token = Security.CreateToken(account, _readOnlyRepository);
+                var sessionDuration = Security.GetTokenLifeSpan(model);
+                var newSession = new Session
                 {
                     SessionAccount = account,
                     Token = token,
                     DateStarted = DateTime.UtcNow,
                     Duration = sessionDuration
                 };
-                Session sessionCreated = _writeOnlyRepository.Create(newSession);
+                var sessionCreated = _writeOnlyRepository.Create(newSession);
                 if (sessionCreated != null) return new AccountAuthenticationModel { Token = token };
             }
             if (retrievedSession != null) return new AccountAuthenticationModel { Token = retrievedSession.Token };
