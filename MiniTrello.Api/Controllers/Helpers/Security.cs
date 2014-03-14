@@ -42,6 +42,12 @@ namespace MiniTrello.Api.Controllers.Helpers
             throw new BadRequestException("You do not posses Administrative priviledges on this board, you are not a True Administrator");
         }
 
+        public static string EncryptPassword(string password)
+        {
+            var myAES = new SimpleAES();
+            return myAES.EncryptToString(password);
+        }
+
         public static void IsThisAccountMemberOfThisBoard(Board board, Account account)
         {
             if (board.MemberAccounts.Any(memberAccount => memberAccount.Email == account.Email))
@@ -73,6 +79,5 @@ namespace MiniTrello.Api.Controllers.Helpers
             string token = myAES.EncryptToString(tokenSeed.ToString(CultureInfo.InvariantCulture));
             return token;
         }
-
     }
 }

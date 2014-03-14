@@ -59,12 +59,17 @@
     <Compile Include="DataObjects\CardCreateModel.cs" />
     <Compile Include="DataObjects\CardDeleteModel.cs" />
     <Compile Include="DataObjects\CardModel.cs" />
+    <Compile Include="DataObjects\Class1.cs" />
+    <Compile Include="DataObjects\EditedProfileModel.cs" />
+    <Compile Include="DataObjects\GetBoardsModel.cs" />
     <Compile Include="DataObjects\LaneCreateModel.cs" />
     <Compile Include="DataObjects\LaneDeleteModel.cs" />
     <Compile Include="DataObjects\LaneModel.cs" />
     <Compile Include="DataObjects\OrganizationModel.cs" />
     <Compile Include="DataObjects\OrganizationNameModel.cs" />
+    <Compile Include="DataObjects\PasswordRestoreInputModel.cs" />
     <Compile Include="DataObjects\RegisterConfirmationModel.cs" />
+    <Compile Include="DataObjects\RestorePasswordModel.cs" />
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\Board.cs" />
     <Compile Include="Entities\Card.cs" />

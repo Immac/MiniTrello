@@ -1,5 +1,6 @@
 using Autofac;
 using AutoMapper;
+using MiniTrello.Api.Controllers.Helpers;
 using MiniTrello.Data;
 using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Services;

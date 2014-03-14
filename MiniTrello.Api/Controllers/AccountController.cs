@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
@@ -66,7 +65,7 @@ namespace MiniTrello.Api.Controllers
         public RegisterConfirmationModel Register([FromBody] AccountRegisterModel model)
         {
             var errorMessage = new ValidationHelper().Validate(model);
-            if (errorMessage.Length > 0) //ERROR OCURRED
+            if (errorMessage.Length > 0)
                 return new RegisterConfirmationModel
                 {
                     ErrorCode = 1,
@@ -75,9 +74,9 @@ namespace MiniTrello.Api.Controllers
                 };
 
             var account = _mappingEngine.Map<AccountRegisterModel, Account>(model);
-            account.Password = encryptPassword(account.Password);
+            account.Password = Security.EncryptPassword(account.Password);
             var accountCreated = _writeOnlyRepository.Create(account);
-            if (accountCreated == null) //ERROR OCURRED
+            if (accountCreated == null) 
                 return new RegisterConfirmationModel
                 {
                     ErrorCode = 1,
@@ -97,30 +96,27 @@ namespace MiniTrello.Api.Controllers
         [GET("boards/{token}")]
         public GetBoardsModel GetBoards(string token)
         {
-            GetBoardsModel getBoardsModel;
             var session = Security.VerifiySession(token, _readOnlyRepository);
             if (session == null)
             {
-                getBoardsModel = new GetBoardsModel
+                return new GetBoardsModel
                 {
                     ErrorCode = 1,
                     ErrorMessage = "The session you are trying to reach does not exist on this server."
                 };
-                return getBoardsModel;
             }
 
             if(Security.IsTokenExpired(session))
             {
-                getBoardsModel = new GetBoardsModel
+                return new GetBoardsModel
                 {
                     ErrorCode = 1,
                     ErrorMessage = "The session you are trying to reach has expired."
                 };
-                return getBoardsModel;
             }
             var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
             var boardsList = accountFromSession.Boards.ToList();
-            getBoardsModel = new GetBoardsModel();
+            var getBoardsModel = new GetBoardsModel();
             foreach (var board in boardsList)
             {
                 var boardModel = _mappingEngine.Map<Board,BoardModel>(board);
@@ -130,52 +126,100 @@ namespace MiniTrello.Api.Controllers
         }
 
         [POST("restorepassword")]
-        public RestorePasswordModel RestorePassword(PasswordRestoreModel model)
+        public RestorePasswordModel RestorePassword(PasswordRestoreInputModel inputModel)
         {
-            RegexUtilities.IsValidEmail(model.Email);
-            String token = Security.CreateRestoreToken(model.Email);
-            Account myAccount = FindCorrespondingAccount(model.Email);
-            if (myAccount == null) throw new BadRequestException("This account was not found on this server");
-            Session newSession = new Session
+            if (RegexUtilities.IsValidEmail(inputModel.Email))
             {
-                SessionAccount = _readOnlyRepository.First<Account>(account => account.Email == model.Email),
+                return new RestorePasswordModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "You have entered an invalid Email."
+                };
+            }
+            var token = Security.CreateRestoreToken(inputModel.Email);
+            var correspondingAccount = FindCorrespondingAccount(inputModel.Email);
+            if (correspondingAccount == null)
+            {
+                return new RestorePasswordModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The account you are trying to reach does not exist on this server."
+                };
+            }
+            var temporarySession = new Session
+            {
+                IsRestoreSession = true,
+                SessionAccount = _readOnlyRepository.First<Account>(account => account.Email == inputModel.Email),
                 Token = token,
                 DateStarted = DateTime.UtcNow,
                 Duration = 15,
             };
-            Session sessionCreated = _writeOnlyRepository.Create(newSession);
-            //send token to email.
-            var returnValue = new RestorePasswordModel
+            var sessionCreated = _writeOnlyRepository.Create(temporarySession);
+            if (sessionCreated == null)
+            {
+                return new RestorePasswordModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "There was an error while trying to recover your account, please try again later or contact the server administrator"
+                };
+            }
+            SendPasswordRestoreMail(inputModel.Email, token);
+            var restorePasswordModel = new RestorePasswordModel
             {
                 Message = "Instructions on password reset have been sent to your Email"
             };
-            return returnValue;
+            return restorePasswordModel;
         }
 
 
-        [System.Web.Http.AcceptVerbs(new[] { "PUT" })]
+        [AcceptVerbs(new[] { "PUT" })]
         [PUT("profile/edit/{token}")]
-        public EditedProfileModel EditProfile([FromBody] AccountEditModel model, string token)
+        public EditedProfileModel EditProfile([FromBody] AccountEditModel accountEditModel, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            string errorMessage = ValidationHelper.ValidateEditModel(model);
-            if(errorMessage.Length > 0) throw new BadRequestException(errorMessage);
-            myAccount.FirstName = model.FirstName;
-            myAccount.LastName = model.LastName;
-            myAccount.Password = model.Password;
-            _writeOnlyRepository.Update(myAccount);
-            EditedProfileModel myEditedProfileModel = _mappingEngine.Map<Account, EditedProfileModel>(myAccount);
-            return myEditedProfileModel;
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new EditedProfileModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The session you are trying to reach does not exist on this server."
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new EditedProfileModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The session you are trying to reach has expired."
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new EditedProfileModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "The account you are trying to reach is not available, or does not exist."
+                };
+            }
+            var errorMessage = ValidationHelper.ValidateEditModel(accountEditModel);
+            if (errorMessage.Length > 0)
+            {
+                return new EditedProfileModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = errorMessage
+                };
+            }
+            accountFromSession.FirstName = accountEditModel.FirstName;
+            accountFromSession.LastName = accountEditModel.LastName;
+            accountFromSession.Password = accountEditModel.Password;
+            _writeOnlyRepository.Update(accountFromSession);
+            return _mappingEngine.Map<Account, EditedProfileModel>(accountFromSession);
         }
 
 
-        private string encryptPassword(string password)
-        {
-            var myAES = new SimpleAES();
-            return myAES.EncryptToString(password);
-        }
+        
 
 
         private Account FindCorrespondingAccount(AccountLoginModel model)
@@ -185,8 +229,7 @@ namespace MiniTrello.Api.Controllers
                 account1 => account1.Email == model.Email);
             if (account == null) return null;
             var accountPassword = myAES.DecryptString(account.Password);
-            if (accountPassword != model.Password) return null;
-            return account;
+            return accountPassword != model.Password ? null : account;
         }
         private Account FindCorrespondingAccount(string email)
         {
@@ -210,14 +253,14 @@ namespace MiniTrello.Api.Controllers
             }
             return session;
         }
-        private void SendAccountCreatedMail(Account accountCreated)
+        private static void SendAccountCreatedMail(Account accountCreated)
         {
-            RestClient client = new RestClient
+            var client = new RestClient
             {
                 BaseUrl = "https://api.mailgun.net/v2",
                 Authenticator = new HttpBasicAuthenticator("api", "key-5sbcxpwm9avrbeds-35y2i5hmda4y8k1")
             };
-            RestRequest request = new RestRequest();
+            var request = new RestRequest();
             request.AddParameter("domain", "sandbox37840.mailgun.org", ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
             request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
@@ -227,84 +270,22 @@ namespace MiniTrello.Api.Controllers
             request.Method = Method.POST;
             client.Execute(request);
         }
-    }
-
-    public class EditedProfileModel
-    {
-
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Message { get; set; }
-    }
-
-    public class RestorePasswordModel
-    {
-        public string Message { get; set; }
-    }
-
-    public class PasswordRestoreModel
-    {
-        public string Email { set; get; }
-    }
-
-    public class GetBoardsModel
-    {
-        private readonly List<BoardModel> _boards = new List<BoardModel>();
-        public int ErrorCode { set; get; }
-        public string ErrorMessage { set; get; }
-        public IEnumerable<BoardModel> Boards
+        private static void SendPasswordRestoreMail(string email,string token)
         {
-            get { return _boards; }
+            var client = new RestClient
+            {
+                BaseUrl = "https://api.mailgun.net/v2",
+                Authenticator = new HttpBasicAuthenticator("api", "key-5sbcxpwm9avrbeds-35y2i5hmda4y8k1")
+            };
+            var request = new RestRequest();
+            request.AddParameter("domain", "sandbox37840.mailgun.org", ParameterType.UrlSegment);
+            request.Resource = "{domain}/messages";
+            request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
+            request.AddParameter("to", email);
+            request.AddParameter("subject","Password restore");
+            request.AddParameter("text", "To restore your password, please visit http://mcminitrelloapi.apphb.com/boards/" + token);
+            request.Method = Method.POST;
+            client.Execute(request);
         }
-
-        public void AddBoard(BoardModel board)
-        {
-            _boards.Add(board);
-        }
-    }
-}
-
-
-
-public class ValidationHelper : IRegisterValidator<AccountRegisterModel>
-{
-    public string Validate(AccountRegisterModel model)
-    {
-        if (model.Password != model.ConfirmPassword)
-        {
-            return "The password confirmation and password fields do not match";
-        }
-
-        if (model.Password.Count() < 8)
-        {
-            return "Your password must contain 8 or more characters";
-        }
-        if (!RegexUtilities.IsValidEmail(model.Email))
-        {
-            return "The email you entered is not valid, please enter a valid email.";
-        }
-        return "";
-    }
-
-    public static string ValidateEditModel(AccountEditModel model)
-    {
-        if (model.FirstName == "")
-        {
-            return "You must provide a first name.";
-        }
-        if (model.LastName == "")
-        {
-            return "You must provide a last name.";
-        }
-        if (model.Password != model.ConfirmPassword)
-        {
-            return "The password confirmation and password fields do not match";
-        }
-
-        if (model.Password.Count() < 8)
-        {
-            return "Your password must contain 8 or more characters";
-        }
-        return "";
     }
 }
