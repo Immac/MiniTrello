@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace MiniTrello.Domain.DataObjects
 {
-    public class LaneModel
+    public class LaneModel:IHandlesErrors
     {
         public long Id { get; set; }
         public bool IsArchived { get; set; }
@@ -19,5 +19,7 @@ namespace MiniTrello.Domain.DataObjects
             _cards.Add(cardModel);
         }
 
+        public int ErrorCode { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

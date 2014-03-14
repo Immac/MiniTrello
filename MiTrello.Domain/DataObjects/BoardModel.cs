@@ -2,7 +2,7 @@
 
 namespace MiniTrello.Domain.DataObjects
 {
-    public class BoardModel
+    public class BoardModel:IHandlesErrors
     {
         private readonly List<LaneModel> _lanes = new List<LaneModel>();
         private readonly List<AccountModel> _memberAccounts = new List<AccountModel>();
@@ -40,6 +40,8 @@ namespace MiniTrello.Domain.DataObjects
         {
             _administratorAccounts.Add(administratorAccount);
         }
-       
+
+        public int ErrorCode { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

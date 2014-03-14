@@ -33,13 +33,9 @@ namespace MiniTrello.Api.Controllers.Helpers
             var session = readOnlyRepository.First<Session>(session1 => session1.Token == token);
             return session;
         }
-        public static void IsThisAccountAdminOfThisBoard(Board board, Account account)
+        public static bool IsThisAccountAdminOfThisBoard(Board board, Account account)
         {
-            if(account.Email == board.OwnerAccount.Email) //Owner of the board is always admin to it
-                return;
-            if (board.AdministratorAccounts.Any(adminAccount => adminAccount.Email == account.Email))
-                return;
-            throw new BadRequestException("You do not posses Administrative priviledges on this board, you are not a True Administrator");
+            return account.Email == board.OwnerAccount.Email || board.AdministratorAccounts.Any(adminAccount => adminAccount.Email == account.Email);
         }
 
         public static string EncryptPassword(string password)
@@ -48,19 +44,9 @@ namespace MiniTrello.Api.Controllers.Helpers
             return myAES.EncryptToString(password);
         }
 
-        public static void IsThisAccountMemberOfThisBoard(Board board, Account account)
+        public static bool IsThisAccountMemberOfThisBoard(Board board, Account account)
         {
-            if (board.MemberAccounts.Any(memberAccount => memberAccount.Email == account.Email))
-                return;
-            try
-            {
-                IsThisAccountAdminOfThisBoard(board, account);
-            }
-            catch (BadRequestException)
-            {
-                throw new BadRequestException("You are not a member of this board.");
-            }
-            
+            return board.MemberAccounts.Any(memberAccount => memberAccount.Email == account.Email) || IsThisAccountAdminOfThisBoard(board, account);
         }
 
         public static Account GetAccountFromSession(Session session, IReadOnlyRepository readOnlyRepository)

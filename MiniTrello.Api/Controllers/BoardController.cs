@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
@@ -30,32 +31,114 @@ namespace MiniTrello.Api.Controllers
         [POST("boards/rename/{token}")]
         public BoardModel RenameBoard([FromBody] BoardChangeTitleModel boardRenameModel, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            var myAccount =
-                Security.GetAccountFromSession(session, _readOnlyRepository);
-            Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
-            Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
-            editedBoard.Title = boardRenameModel.Title;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " RenameBoard " + boardRenameModel.Title + " ";
-            _writeOnlyRepository.Update(editedBoard);
-            BoardModel returnBoardModel = _mappingEngine.Map<Board, BoardModel>(editedBoard);
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
+            var editedBoardModel = _readOnlyRepository.First<Board>(board => board.Id == boardRenameModel.Id);
+            if (!Security.IsThisAccountAdminOfThisBoard(editedBoardModel, accountFromSession))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
+            editedBoardModel.Title = boardRenameModel.Title;
+            editedBoardModel.Log = editedBoardModel.Log + accountFromSession.FirstName + " RenameBoard " + boardRenameModel.Title + " ";
+            _writeOnlyRepository.Update(editedBoardModel);
+            var returnBoardModel = _mappingEngine.Map<Board, BoardModel>(editedBoardModel);
             return returnBoardModel;
         }
         
         [POST("boards/createcard/{token}")]
         public CardModel CreateCard([FromBody]CardCreateModel model,string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            var account = Security.GetAccountFromSession(session, _readOnlyRepository);
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
             var lane = _readOnlyRepository.GetById<Lane>(model.LaneId);
+            if (lane == null)
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.LaneDoesNotExist
+                };
+            }
             var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
+            if (editedBoard == null)
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.BoardDoesNotExist
+                };
+            }
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
-            Security.IsThisAccountMemberOfThisBoard(editedBoard, account);
+            if (card == null)
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.CardDoesNotExist
+                };
+            }
+            if (!Security.IsThisAccountMemberOfThisBoard(editedBoard, accountFromSession))
+            {
+                return new CardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
             lane.AddCard(card);
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateCArd " + card.Id + " ";
+            editedBoard.Log = editedBoard.Log + accountFromSession.FirstName + " CreateCArd " + card.Id + " ";
             _writeOnlyRepository.Update(editedBoard);
             return _mappingEngine.Map<Card, CardModel>(card);
         }
@@ -63,16 +146,53 @@ namespace MiniTrello.Api.Controllers
         [POST("boards/createlane/{token}")]
         public LaneModel CreateLane([FromBody]LaneCreateModel model,string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            var myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            var editedBoard = _readOnlyRepository.GetById<Board>(model.BoardId);
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new LaneModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new LaneModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new LaneModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
             if (editedBoard == null)
-                throw new BadRequestException("The board you are trying to reach, does not exist in this server.");
-            Security.IsThisAccountMemberOfThisBoard(editedBoard,myAccount);
-            Lane newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
+            {
+                return new LaneModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.BoardDoesNotExist
+                };
+            }
+            if (!Security.IsThisAccountMemberOfThisBoard(editedBoard, accountFromSession))
+            {
+                return new LaneModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
+            
+            var newLane = _mappingEngine.Map<LaneCreateModel,Lane>(model);
             editedBoard.AddLane(newLane);
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " CreateLane " + newLane.Id + " ";
+            editedBoard.Log = editedBoard.Log + accountFromSession.FirstName + " CreateLane " + newLane.Id + " ";
             _writeOnlyRepository.Update(editedBoard);
             return _mappingEngine.Map<Lane, LaneModel>(newLane);
         }
@@ -80,64 +200,190 @@ namespace MiniTrello.Api.Controllers
         [POST("boards/movecard/{token}")]
         public BoardModel MoveCard([FromBody] CardMoveModel model, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            Card card = _readOnlyRepository.First<Card>(card1 => card1.Id == model.CardId);
-            Lane newLane = _readOnlyRepository.GetById<Lane>(model.DestinationId);
-            Lane oldLane = _readOnlyRepository.First<Lane>(lane => lane.Cards.Contains(card));
-            Board board =
-                _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(newLane) && board1.Lanes.Contains(oldLane));
-            if (board == null) throw new BadRequestException("You can't transfer cards over boards");
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
+            if (editedBoard == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.BoardDoesNotExist
+                };
+            }
+            if (!Security.IsThisAccountMemberOfThisBoard(editedBoard, accountFromSession))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
+            var card    = _readOnlyRepository.First<Card>(card1 => card1.Id == model.CardId);
+            var newLane = _readOnlyRepository.GetById<Lane>(model.DestinationId);
+            var oldLane = _readOnlyRepository.First<Lane>(lane => lane.Cards.Contains(card));
+            var board   = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(newLane) && board1.Lanes.Contains(oldLane));
+            if (board == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = "Transfering cards to other boards is not allowed"
+                };
+            }
 
             newLane.AddCard(card);
             oldLane.RemoveCard(card);
-            board.Log = board.Log + myAccount.FirstName + " MoveCard " + card.Id + " to lane " +
+            board.Log = board.Log + accountFromSession.FirstName + " MoveCard " + card.Id + " to lane " +
                         newLane.Id.ToString(CultureInfo.InvariantCulture) + " ";
-            _writeOnlyRepository.Update(myAccount);
+            _writeOnlyRepository.Update(accountFromSession);
             return _mappingEngine.Map<Board, BoardModel>(board);
         }
 
         [DELETE("boards/deletelane/{token}")]
         public BoardModel DeleteLane([FromBody] LaneDeleteModel model, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            }
+            if (Security.IsTokenExpired(session))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
+            if (editedBoard == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.BoardDoesNotExist
+                };
+            }
+            if (!Security.IsThisAccountMemberOfThisBoard(editedBoard, accountFromSession))
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
             Lane lane = _readOnlyRepository.First<Lane>(lane1 => lane1.Id == model.LaneId);
-            if (lane == null) throw new BadRequestException("Lane Id does not match any existing lanes");
-            Board editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Contains(lane));
-            if (editedBoard == null) throw new BadRequestException("This lane is not owned by any board");
-            Security.IsThisAccountMemberOfThisBoard(editedBoard, myAccount);
+            if (lane == null)
+            {
+                return new BoardModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.LaneDoesNotExist
+                };
+            }      
+            Security.IsThisAccountMemberOfThisBoard(editedBoard, accountFromSession);
             lane.IsArchived = model.IsArchived;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " DeleteLane " + lane.Id + " ";
+            editedBoard.Log = editedBoard.Log + accountFromSession.FirstName + " DeleteLane " + lane.Id + " ";
             _writeOnlyRepository.Update(lane);
             return _mappingEngine.Map<Board, BoardModel>(editedBoard);
         }
         
-        //Can restore files too by setting "IsArchived to false"
         [DELETE("boards/delete/{token}")]
         public GetBoardsModel DeleteBoard([FromBody] BoardDeleteModel model, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Account myAccount =
-                Security.GetAccountFromSession(session, _readOnlyRepository);
-            Board editedBoard = _readOnlyRepository.First<Board>(board => board.Id == model.Id);
-            if (editedBoard == null) throw new BadRequestException("The board you are trying to reach does not exist in this server");
-
-            Security.IsThisAccountAdminOfThisBoard(editedBoard, myAccount);
-            editedBoard.IsArchived = model.IsArchived;
-            editedBoard.Log = editedBoard.Log + myAccount.FirstName + " deleteBoard " + editedBoard.Id.ToString(CultureInfo.InvariantCulture) + " ";
-            _writeOnlyRepository.Update(editedBoard);
-
-            GetBoardsModel myModel = new GetBoardsModel();
-            foreach (var board in myAccount.Boards)
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
             {
-                BoardModel myBoardModel = _mappingEngine.Map<Board, BoardModel>(board);
-                myModel.AddBoard(myBoardModel);
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
             }
-            return myModel;
+            if (Security.IsTokenExpired(session))
+            {
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            }
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+            {
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            }
+            var editedBoard = _readOnlyRepository.First<Board>(board1 => board1.Lanes.Any(lane1 => lane1.Id == lane.Id));
+            if (editedBoard == null)
+            {
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.BoardDoesNotExist
+                };
+            }
+
+            if (!Security.IsThisAccountAdminOfThisBoard(editedBoard, accountFromSession))
+            {
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.NotEnoughPriviledges
+                };
+            }
+
+            editedBoard.IsArchived = model.IsArchived;
+            editedBoard.Log = editedBoard.Log + accountFromSession.FirstName + " deleteBoard " + editedBoard.Id.ToString(CultureInfo.InvariantCulture) + " ";
+            _writeOnlyRepository.Update(editedBoard);
+            var boardsModel = new GetBoardsModel();
+            foreach (var board in accountFromSession.Boards)
+            {
+                var myBoardModel = _mappingEngine.Map<Board, BoardModel>(board);
+                boardsModel.AddBoard(myBoardModel);
+            }
+            return boardsModel;
         }
 
         [DELETE("boards/deletecard/{token}")]
