@@ -1,12 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Web.Helpers;
-using System.Web.Script.Serialization;
-using MiniTrello.Domain.Entities;
 
-namespace MiniTrello.Api.Models
+namespace MiniTrello.Domain.DataObjects
 {
     public class BoardModel
     {

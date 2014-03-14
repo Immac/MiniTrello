@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MiniTrello.Api.Models
+namespace MiniTrello.Domain.DataObjects
 {
     public class AccountModel
     {

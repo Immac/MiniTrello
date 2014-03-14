@@ -5,8 +5,8 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using MiniTrello.Api.CustomExceptions;
-using MiniTrello.Api.Models;
 using MiniTrello.Data;
+using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
 

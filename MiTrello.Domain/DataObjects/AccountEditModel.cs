@@ -1,10 +1,9 @@
-namespace MiniTrello.Api.Models
+namespace MiniTrello.Domain.DataObjects
 {
-    public class AccountRegisterModel
+    public class AccountEditModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
     }

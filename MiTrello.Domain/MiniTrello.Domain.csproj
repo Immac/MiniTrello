@@ -39,6 +39,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataObjects\AccountAuthenticationModel.cs" />
+    <Compile Include="DataObjects\AccountEditModel.cs" />
+    <Compile Include="DataObjects\AccountLoginModel.cs" />
+    <Compile Include="DataObjects\AccountModel.cs" />
+    <Compile Include="DataObjects\AccountRegisterModel.cs" />
+    <Compile Include="DataObjects\AddMemberBoardModel.cs" />
+    <Compile Include="DataObjects\BoardChangeTitleModel.cs" />
+    <Compile Include="DataObjects\BoardCreateModel.cs" />
+    <Compile Include="DataObjects\BoardDeleteModel.cs" />
+    <Compile Include="DataObjects\BoardModel.cs" />
+    <Compile Include="DataObjects\BoardTitleModel.cs" />
+    <Compile Include="DataObjects\CardCreateModel.cs" />
+    <Compile Include="DataObjects\CardDeleteModel.cs" />
+    <Compile Include="DataObjects\CardModel.cs" />
+    <Compile Include="DataObjects\LaneCreateModel.cs" />
+    <Compile Include="DataObjects\LaneDeleteModel.cs" />
+    <Compile Include="DataObjects\LaneModel.cs" />
+    <Compile Include="DataObjects\OrganizationModel.cs" />
+    <Compile Include="DataObjects\OrganizationNameModel.cs" />
+    <Compile Include="DataObjects\RegisterConfirmationModel.cs" />
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\Board.cs" />
     <Compile Include="Entities\Card.cs" />
