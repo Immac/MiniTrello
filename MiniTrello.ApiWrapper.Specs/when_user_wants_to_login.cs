@@ -9,7 +9,7 @@ namespace MiniTrello.ApiWrapper.Specs
     {
         
         
-
+        /*
         Establish context = () => { _accountLoginModel = new AccountLoginModel(); };
 
         Because of = () => { _result = MiniTrelloSdk.Login(_accountLoginModel); };
@@ -19,6 +19,6 @@ namespace MiniTrello.ApiWrapper.Specs
                _resu
         };
         static AccountLoginModel _accountLoginModel;
-        private static AccountAuthenticationModel _result;
+        private static AccountAuthenticationModel _result;*/
     }
 }
