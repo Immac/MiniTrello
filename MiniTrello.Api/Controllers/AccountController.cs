@@ -5,7 +5,6 @@ using AttributeRouting.Web.Http;
 using AutoMapper;
 using MiniTrello.Api.Controllers.Helpers;
 using MiniTrello.Api.CustomExceptions;
-using MiniTrello.Api.Other;
 using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;

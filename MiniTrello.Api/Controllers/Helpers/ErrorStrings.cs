@@ -9,5 +9,7 @@ namespace MiniTrello.Api.Controllers.Helpers
         public const string LaneDoesNotExist = "The lane you are tring to reach does not exist on this server.";
         public const string BoardDoesNotExist = "The board you are tring to reach does not exist on this server.";
         public const string CardDoesNotExist = "The card you are tring to reach does not exist on this server.";
+        public const string CouldNotCreateItem = "There was an error whiletrying to create the requested item.";
+
     }
 }

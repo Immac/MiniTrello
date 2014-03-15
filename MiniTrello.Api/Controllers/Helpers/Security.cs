@@ -12,7 +12,7 @@ namespace MiniTrello.Api.Controllers.Helpers
     {
         public static string CreateToken(Account account,IReadOnlyRepository readOnlyRepository)
         {   
-            SimpleAES myAES = new SimpleAES();
+            var myAES = new SimpleAES();
             int random = RandomHelper.Instance.Next();
             long tokenSeed = account.Id.GetHashCode() + random;
             string token = myAES.EncryptToString(tokenSeed.ToString(CultureInfo.InvariantCulture));
@@ -21,7 +21,7 @@ namespace MiniTrello.Api.Controllers.Helpers
 
         public static long GetTokenLifeSpan(AccountLoginModel model)
         {
-            return model.SessionDuration > 30 ? model.SessionDuration : 30;
+            return model.SessionDuration > 15 ? model.SessionDuration : 15;
         }
 
         public static bool IsTokenExpired(Session session)

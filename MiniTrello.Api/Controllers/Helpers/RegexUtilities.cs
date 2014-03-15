@@ -1,8 +1,9 @@
-﻿using System;
+//http://msdn.microsoft.com/en-us/library/01escwtf(v=vs.110).aspx
+using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
-//http://msdn.microsoft.com/en-us/library/01escwtf(v=vs.110).aspx
-namespace MiniTrello.Api.Other
+
+namespace MiniTrello.Api.Controllers.Helpers
 {
     public static class RegexUtilities
     {

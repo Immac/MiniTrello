@@ -1,5 +1,4 @@
 using System.Linq;
-using MiniTrello.Api.Other;
 using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Services;
 
