@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
-using MiniTrello.Api.Controllers;
 using MiniTrello.Domain.DataObjects;
-using MiniTrello.Domain.Entities;
 using RestSharp;
 
 namespace MiniTrello.ApiWrapper
