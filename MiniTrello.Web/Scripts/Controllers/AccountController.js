@@ -11,7 +11,7 @@ angular.module('app.controllers')
     .controller('AccountController', ['$scope', '$location', '$window', 'AccountServices', function ($scope, $location, $window, AccountServices) {
 
         $scope.hasError = false;
-    $scope.errorMessage = '';
+        $scope.errorMessage = '';
 
         $scope.isLogged = function() {
             return $window.sessionStorage.token != null;
@@ -21,15 +21,15 @@ angular.module('app.controllers')
 
     $scope.registerModel = { Email: '', Password: '', FirstName: '', LastName: '', ConfirmPassword: '' };
     $scope.errorMessage = '';
-        // TODO: Authorize a user
+
         $scope.login = function () {
 
             AccountServices
                 .login($scope.loginModel)
               .success(function (data, status, headers, config) {
-                  console.log("Login data:")
-                  console.log(data);
-                  console.log("Login data")
+                    console.log("Login data:");
+                    console.log(data);
+                    console.log("Login data");
                   if (data.ErrorCode != 0) {
                       $scope.hasError = true;
                       $scope.errorMessage = data.ErrorMessage;
@@ -37,6 +37,8 @@ angular.module('app.controllers')
                   } else {
                       $scope.hasError = false;
                       $window.sessionStorage.token = data.Token;
+                      $scope.accountName = 'Kogasa'; // TODO: get accname from object
+                      console.log($scope.accountName);
                       $location.path('/boards');
                   }
                   
@@ -79,7 +81,7 @@ angular.module('app.controllers')
                 $scope.errorMessage = 'An unexpected ERROR has occured.';
             });
     };
-
+    console.log($scope.accountName);
         $scope.$on('$viewContentLoaded', function () {
             $window.ga('send', 'pageview', { 'page': $location.path(), 'title': $scope.$root.title });
         });

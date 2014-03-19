@@ -2,7 +2,7 @@
 
 // Declares how the application should be bootstrapped. See: http://docs.angularjs.org/guide/module
 angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directives', 'app.controllers'])
-
+   
     // Gets executed during the provider registrations and configuration phase. Only providers and constants can be
     // injected here. This is to prevent accidental instantiation of services before they have been fully configured.
     .config(['$stateProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $locationProvider, $httpProvider) {
@@ -15,7 +15,7 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
         $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json' };
         $httpProvider.defaults.headers.patch = { 'Content-Type': 'application/json' };
         $httpProvider.defaults.headers.get = { 'Content-Type': 'application/json' };
-
+        
         $stateProvider
             .state('home', {
                 url: '/',

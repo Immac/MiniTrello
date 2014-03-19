@@ -39,10 +39,11 @@
                         <a href="./organization/new">New Organization</a>
                     </li>
                 </ul>
+                <a ng-show="isLogged()" href="#">Bienvenido {{accountName}}</a> 
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a ng-hide="isLogged()" href="./login">Sign In</a>
-                        <a ng-show="isLogged()" href="#">Bienvenido Kehimer</a>
+                        <a ng-show="isLogged()" href="#">Bienvenido {{accountName}}</a>
                     </li>
                 </ul>
             </nav>
