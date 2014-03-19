@@ -7,6 +7,8 @@ namespace MiniTrello.Domain.DataObjects
         public long Id { get; set; }
         public bool IsArchived { get; set; }
 
+        public string Name { set; get; }
+
         private readonly List<CardModel> _cards = new List<CardModel>();
 
         public List<CardModel> Cards
