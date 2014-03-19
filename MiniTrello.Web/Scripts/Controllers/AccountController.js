@@ -27,8 +27,10 @@ angular.module('app.controllers')
             AccountServices
                 .login($scope.loginModel)
               .success(function (data, status, headers, config) {
+                  console.log("Login data:")
+                  console.log(data);
+                  console.log("Login data")
                   if (data.ErrorCode != 0) {
-                      console.log(data);      
                       $scope.hasError = true;
                       $scope.errorMessage = data.ErrorMessage;
                       alert(data.ErrorMessage);

@@ -46,15 +46,16 @@ namespace MiniTrello.Api.Controllers
                         Duration = sessionDuration
                     };
                     var sessionCreated = _writeOnlyRepository.Create(newSession);
-                    if (sessionCreated != null) return new AccountAuthenticationModel { Token = token };
+                    if (sessionCreated != null) return new AccountAuthenticationModel {AccountName = sessionCreated.SessionAccount.FirstName, Token = token };
                 }
-                if (retrievedSession != null) return new AccountAuthenticationModel { Token = retrievedSession.Token };
+                if (retrievedSession != null) return new AccountAuthenticationModel {AccountName = retrievedSession.SessionAccount.FirstName, Token = retrievedSession.Token };
             }
             return new AccountAuthenticationModel
             {
                 ErrorCode = 1,
                 ErrorMessage = "Invalid username or password",
-                Token = ""
+                Token = "",
+                AccountName = ""
             };
         }
 
