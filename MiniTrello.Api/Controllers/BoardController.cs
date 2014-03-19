@@ -519,6 +519,7 @@ namespace MiniTrello.Api.Controllers
                 };
             }
             var newBoard = _mappingEngine.Map<BoardCreateModel, Board>(model);
+            initBoard(newBoard);
             var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
             if (accountFromSession == null)
             {
@@ -539,6 +540,30 @@ namespace MiniTrello.Api.Controllers
                 boardsModel.AddBoard(boardModel);
             }
             return boardsModel;
+        }
+
+        private void initBoard(Board newBoard)
+        {
+            var newLane = new Lane
+            {
+                Name = "To Do:"
+            };
+            newLane = _writeOnlyRepository.Create(newLane);
+            newBoard.AddLane(newLane);
+            var newLane2 = new Lane
+            {
+                Name = "Doing:"
+            };
+            newLane2 = _writeOnlyRepository.Create(newLane2);
+            newBoard.AddLane(newLane2);
+            
+            var newLane3 = new Lane
+            {
+                Name = "Doing:"
+            };
+            newLane3 = _writeOnlyRepository.Create(newLane3);
+            newBoard.AddLane(newLane3);
+
         }
 
         [GET("boards/{boardId}/{token}")] 

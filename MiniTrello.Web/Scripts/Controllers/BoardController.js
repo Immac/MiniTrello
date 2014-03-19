@@ -28,7 +28,7 @@ angular.module('app.controllers')
                       $scope.hasError = true;
                       $scope.errorMessage = data.ErrorMessage;
                   }
-                  $scope.boards = data;
+                  $scope.boards = data.Boards;
                 })
               .error(function (data, status, headers, config) {
                 console.log(data);
