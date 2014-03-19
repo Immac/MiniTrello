@@ -27,8 +27,16 @@ angular.module('app.controllers')
             AccountServices
                 .login($scope.loginModel)
               .success(function (data, status, headers, config) {
-                  $window.sessionStorage.token = data.Token;
-                  $location.path('/boards');
+                  if (data.ErrorCode != 0) {
+                      console.log(data);      
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                  } else {
+                      $scope.hasError = false;
+                      $window.sessionStorage.token = data.Token;
+                      $location.path('/boards');
+                  }
+                  
               })
               .error(function (data, status, headers, config) {
                 // Erase the token if the user fails to log in
@@ -54,14 +62,18 @@ angular.module('app.controllers')
         AccountServices
             .register($scope.registerModel)
             .success(function (data, status, headers, config) {
-                $scope.hasError = false;
                 console.log(data);
-                $scope.goToLogin();
+                if (data.ErrorCode != 0) {
+                    $scope.hasError = true;
+                    $scope.errorMessage = data.ErrorMessage;
+                } else {
+                    $scope.goToLogin();
+                }
             })
             .error(function (data, status, headers, config) {
-                console.log(config);
+                console.log(data);
                 $scope.hasError = true;
-                $scope.errorMessage = 'An error has occured! are you a member already? If so try signing in. Is your password less than 8 characters long?';
+                $scope.errorMessage = 'An unexpected ERROR has occured.';
             });
     };
 

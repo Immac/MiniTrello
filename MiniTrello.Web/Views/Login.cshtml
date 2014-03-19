@@ -2,9 +2,7 @@
     PageData["title"] = "Mini Trello | Sign In";
 }
 
-<div class="row" ng-show="hasError">
-    <p>{{errorMessage}}</p>
-</div>
+
 
 <div class="row" style="margin-top:20px">
     <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
@@ -21,7 +19,7 @@
                 <div class="form-group">
                     <button type="button" class="btn" data-color="info">Remember Me</button>
                     <input type="checkbox" name="remember_me" id="remember_me" checked="checked" class="hidden">
-                        <a href="" class="btn btn-link pull-left">Forgot Password?</a>    
+                    <a href="" class="btn btn-link pull-left">Forgot Password?</a>    
                     
                 </div>
                 <hr class="colorgraph">
@@ -35,5 +33,9 @@
                 </div>
             </fieldset>
         </form>
+        <div class="row">
+            <p>{{errorMessage}}</p>
+        </div>
     </div>
+    
 </div>

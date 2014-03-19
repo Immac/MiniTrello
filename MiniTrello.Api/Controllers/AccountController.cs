@@ -241,16 +241,7 @@ namespace MiniTrello.Api.Controllers
         {
             var session = _readOnlyRepository.Query<Session>(x => x.SessionAccount.Email == account.Email).OrderByDescending(x => x.DateStarted).FirstOrDefault();
             if (session == null) return null;
-            try
-            {
-                Security.IsTokenExpired(session);
-            }
-            catch (BadRequestException exception)
-            {
-                if (exception.Response.ReasonPhrase == "Your session has expired, please log in again")
-                    return null;
-            }
-            return session;
+                return Security.IsTokenExpired(session) ? null : session;
         }
         private static void SendAccountCreatedMail(Account accountCreated)
         {

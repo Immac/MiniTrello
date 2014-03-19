@@ -18,19 +18,17 @@ angular.module('app.controllers')
         console.log($scope.boardDetailId);
 
         $scope.boards = [];
-
-        var board = { Id: 1, Name: 'Myboard1', Description: 'Description1' };
-        var board1 = { Id: 2, Name: 'Myboard2', Description: 'Description2' };
-        $scope.boards.push(board);
-    $scope.boards.push(board1);
-        
-
         $scope.getBoardsForLoggedUser = function () {
 
             boardServices
                 .getBoardsForLoggedUser()
               .success(function (data, status, headers, config) {
-                    $scope.boards = data;
+                  console.log(data);
+                  if (data.errorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                  }
+                  $scope.boards = data;
                 })
               .error(function (data, status, headers, config) {
                 console.log(data);
