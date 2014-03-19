@@ -31,6 +31,7 @@ angular.module('app.controllers')
                       console.log(data);      
                       $scope.hasError = true;
                       $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
                   } else {
                       $scope.hasError = false;
                       $window.sessionStorage.token = data.Token;
