@@ -13,8 +13,7 @@
                                 {{board.Title}}
                             </h2>
                         </a>
-                        <p> Board delete confirmation number: {{board.Id}}
-                            
+                        <p> Board ID: {{board.Id}}
                         </p>
                         <hr />
                     </div>
@@ -24,9 +23,9 @@
     </div>
     <div class="col-md-6">
         <div class="row">
-            <input type="text" name="newBoard" ng-model="BoardCreateModel.Title" id="newBoard" class="form-control">
+            <input type="text" name="newBoard" placeholder="Board Name" ng-model="BoardCreateModel.Title" id="newBoard" class="form-control">
             <button ng-click="CreateBoard()" class="btn-lg btn-success">Create board</button>
-            <input type="number" name="delete" ng-model="BoardDeleteModel.Id" id="deleteBoard" class="form-control">
+            <input type="number" placeholder="Board ID" name="delete" ng-model="BoardDeleteModel.Id" id="deleteBoard" class="form-control">
             <button ng-click="DeleteBoard()" class="btn-lg btn-warning">Delete Board</button>
         </div>
      </div>

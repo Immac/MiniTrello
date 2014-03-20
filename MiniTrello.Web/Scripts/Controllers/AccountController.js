@@ -39,7 +39,7 @@ angular.module('app.controllers')
                   } else {
                       $scope.hasError = false;
                       $window.sessionStorage.token = data.Token;
-                      $scope.accountName = 'Kogasa'; // TODO: get accname from object
+                      $scope.accountName.Name = 'Kogasa'; // TODO: get accname from object
                       console.log($scope.accountName);
                       $location.path('/boards');
                   }

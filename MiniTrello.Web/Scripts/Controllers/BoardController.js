@@ -14,10 +14,12 @@ angular.module('app.controllers')
         $scope.boardDetailId = $stateParams.boardId;
         $scope.BoardCreateModel = {Title: ''};
         $scope.BoardDeleteModel = { Id : '', IsArchived : true };
-
+        
         console.log($scope.boardDetailId);
-
+    
         $scope.boards = [];
+        $scope.BoardDetailModel = [];
+
         $scope.getBoardsForLoggedUser = function () {
             boardServices
                 .getBoardsForLoggedUser()
@@ -91,9 +93,28 @@ angular.module('app.controllers')
             //$location.path('/');
         };
 
+        $scope.GetBoard = function() {
+            boardServices.getBoard($stateParams.boardId)
+            .success(function (data, status, headers, config) {
+                console.log(data);
+                if (data.errorCode != 0) {
+                    $scope.hasError = true;
+                    $scope.errorMessage = data.ErrorMessage;
+                } else {
+                    log(data);
+                };
+                $scope.boards = data.Boards;
+            })
+              .error(function (data, status, headers, config) {
+                  console.log(data);
+              });
+            //$location.path('/');
+        };
     if ($scope.boardDetailId > 0){
         $scope.selectedBoard = $.grep($scope.boards, function (e) { return e.id == id; });
-        console.log($scope.selectedBoard);
+        console.log("selected board:");
+        console.log($stateParams.boardId);
+        $scope.GetBoard();
     }else{
         $scope.getBoardsForLoggedUser();
     }

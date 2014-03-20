@@ -17,7 +17,10 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
     };
 
     board.deleteBoard = function(model) {
-        return $http.delete(baseUrl + 'boards/delete/' + $window.sessionStorage.token, model);
+        return $http.delete(baseUrl + '/boards/delete/' + $window.sessionStorage.token, model);
+    };
+    board.getBoard = function (id) {
+        return $http.get(baseUrl + '/board/' + id + '/' + $window.sessionStorage.token);
     };
     return board;
 

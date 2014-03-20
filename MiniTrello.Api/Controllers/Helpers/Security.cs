@@ -21,7 +21,7 @@ namespace MiniTrello.Api.Controllers.Helpers
 
         public static long GetTokenLifeSpan(AccountLoginModel model)
         {
-            return model.SessionDuration > 15 ? model.SessionDuration : 15;
+            return model.SessionDuration > 45 ? model.SessionDuration : 45;
         }
 
         public static bool IsTokenExpired(Session session)
