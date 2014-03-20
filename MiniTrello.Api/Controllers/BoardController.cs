@@ -117,7 +117,9 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = ErrorStrings.BoardDoesNotExist
                 };
             }
+            editedBoard.AddMemberAccount(accountFromSession);
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
+            card = _writeOnlyRepository.Create(card);
             if (card == null)
             {
                 return new CardModel
@@ -187,6 +189,7 @@ namespace MiniTrello.Api.Controllers
                 };
             }
             var newLane = _mappingEngine.Map<LaneCreateModel,Lane>(laneCreateModelmodel);
+            newLane = _writeOnlyRepository.Create(newLane);
             if (newLane == null)
             {
                 return new LaneModel

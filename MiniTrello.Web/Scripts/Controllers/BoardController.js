@@ -14,7 +14,8 @@ angular.module('app.controllers')
         $scope.boardDetailId = $stateParams.boardId;
         $scope.BoardCreateModel = {Title: ''};
         $scope.BoardDeleteModel = { Id : 0, IsArchived : true };
-        
+        $scope.LaneCreateModel = {BoardId: 0,Name :''};
+
         console.log($scope.boardDetailId);
     
         $scope.boards = [];
@@ -96,17 +97,77 @@ angular.module('app.controllers')
         $scope.GetBoard = function() {
             boardServices.getBoard($stateParams.boardId)
             .success(function (data, status, headers, config) {
-                console.log(data);
+                    console.log("GetBoard: ");
+                    console.log(data);
+                    $scope.BoardDetailModel = data;
+                    console.log("Board Detail Model:");
+                    console.log($scope.BoardDetailModel);
                 if (data.errorCode != 0) {
                     $scope.hasError = true;
                     $scope.errorMessage = data.ErrorMessage;
                 } else {
-                    log(data);
+                    $scope.BoardDetailModel = data;
+                    console.log("Board Detail Model:");
+                    console.log($scope.BoardDetailModel);
                 };
-                $scope.boards = data.Boards;
             })
               .error(function (data, status, headers, config) {
                   console.log(data);
+              });
+            //$location.path('/');
+        };
+
+        $scope.CreateLane = function () {
+            $scope.LaneCreateModel.BoardId = $stateParams.boardId;
+            boardServices.createLane($scope.LaneCreateModel)
+              .success(function (data, status, headers, config) {
+                  console.log("data sent:");
+                  console.log($scope.LaneCreateModel);
+                  console.log("data recieved:");
+                  console.log(data);
+                  
+                  if (data.ErrorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
+                  } else {
+                      $scope.hasError = false;
+                      $scope.getBoardsForLoggedUser();
+                      $scope.LaneCreateModel = '';
+                      $scope.GetBoard();
+                  }
+
+              })
+              .error(function (data, status, headers, config) {
+                  $scope.hasError = true;
+                  $scope.message = 'Error: an unexpected error has occured.';
+              });
+            //$location.path('/');
+            };
+        $scope.CreateCard = function () {
+            $scope.CardCreateModel.LaneId = $stateParams.boardId;
+            boardServices.createCard($scope.CardCreateModel)
+              .success(function (data, status, headers, config) {
+                  console.log("data sent:");
+                  console.log($scope.CardCreateModel);
+                  console.log("data recieved:");
+                  console.log(data);
+
+                  if (data.ErrorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
+                  } else {
+                      $scope.hasError = false;
+                      $scope.getBoardsForLoggedUser();
+                      $scope.CardCreateModel = '';
+                      $scope.GetBoard();
+                  }
+
+              })
+              .error(function (data, status, headers, config) {
+                  $scope.hasError = true;
+                  $scope.message = 'Error: an unexpected error has occured.';
               });
             //$location.path('/');
         };
