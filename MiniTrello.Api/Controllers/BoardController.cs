@@ -189,6 +189,7 @@ namespace MiniTrello.Api.Controllers
                 };
             }
             var newLane = _mappingEngine.Map<LaneCreateModel,Lane>(laneCreateModelmodel);
+            newLane = _writeOnlyRepository.Create(newLane);
             if (newLane == null)
             {
                 return new LaneModel
