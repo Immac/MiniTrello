@@ -119,6 +119,7 @@ namespace MiniTrello.Api.Controllers
             }
             editedBoard.AddMemberAccount(accountFromSession);
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
+            card = _writeOnlyRepository.Create(card);
             if (card == null)
             {
                 return new CardModel
