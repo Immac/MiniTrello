@@ -96,14 +96,19 @@ angular.module('app.controllers')
         $scope.GetBoard = function() {
             boardServices.getBoard($stateParams.boardId)
             .success(function (data, status, headers, config) {
-                console.log(data);
+                    console.log("GetBoard: ");
+                    console.log(data);
+                    $scope.BoardDetailModel = data;
+                    console.log("Board Detail Model:");
+                    console.log($scope.BoardDetailModel);
                 if (data.errorCode != 0) {
                     $scope.hasError = true;
                     $scope.errorMessage = data.ErrorMessage;
                 } else {
-                    log(data);
+                    $scope.BoardDetailModel = data;
+                    console.log("Board Detail Model:");
+                    console.log($scope.BoardDetailModel);
                 };
-                $scope.boards = data.Boards;
             })
               .error(function (data, status, headers, config) {
                   console.log(data);

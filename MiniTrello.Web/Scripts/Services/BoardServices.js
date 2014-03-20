@@ -22,7 +22,23 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
         return $http.delete(baseUrl + '/boards/delete/' + $window.sessionStorage.token, model);
     };
     board.getBoard = function (id) {
-        return $http.get(baseUrl + '/board/' + id + '/' + $window.sessionStorage.token);
+        return $http.get(baseUrl + '/boards/' + id + '/' + $window.sessionStorage.token);
+    };
+    board.createLane = function (model) {
+        console.log(model);
+        return $http.post(baseUrl + '/boards/createlane/' + $window.sessionStorage.token, model);
+    };
+    board.deleteLane = function (model) {
+        console.log(model);
+        return $http.delete(baseUrl + '/boards/deletelane/' + $window.sessionStorage.token, model);
+    };
+    board.createCard = function (model) {
+        console.log(model);
+        return $http.post(baseUrl + '/boards/createcard/' + $window.sessionStorage.token, model);
+    };
+    board.deleteCard = function (model) {
+        console.log(model);
+        return $http.delete(baseUrl + '/boards/deletecard/' + $window.sessionStorage.token, model);
     };
     return board;
 
