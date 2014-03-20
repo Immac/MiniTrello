@@ -324,8 +324,9 @@ namespace MiniTrello.Api.Controllers
             return _mappingEngine.Map<Board, BoardModel>(editedBoard);
         }
         
-        [DELETE("boards/delete/{token}")]
-        public GetBoardsModel DeleteBoard([FromBody] BoardDeleteModel model, string token)
+        [AcceptVerbs("DELETE")]
+        [DELETE("boards/{id}/{token}")]
+        public GetBoardsModel DeleteBoard(long id, string token)
         {
             var session = Security.VerifiySession(token, _readOnlyRepository);
             if (session == null)
@@ -351,7 +352,7 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = ErrorStrings.AccountDoesNotExist
                 };
             }
-            var editedBoard = _readOnlyRepository.GetById<Board>(model.Id);
+            var editedBoard = _readOnlyRepository.GetById<Board>(id);
             if (editedBoard == null)
             {
                 return new GetBoardsModel
@@ -370,7 +371,7 @@ namespace MiniTrello.Api.Controllers
                 };
             }
 
-            editedBoard.IsArchived = model.IsArchived;
+            editedBoard.IsArchived = true;
             editedBoard.Log = editedBoard.Log + accountFromSession.FirstName + " deleteBoard " + editedBoard.Id.ToString(CultureInfo.InvariantCulture) + " ";
             _writeOnlyRepository.Update(editedBoard);
             var boardsModel = new GetBoardsModel();

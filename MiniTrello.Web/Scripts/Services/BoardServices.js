@@ -6,7 +6,7 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
 
     var baseRemoteUrl = "http://mcminitrelloapi.apphb.com";
     var baseLocalUrl = "http://localhost:1416";
-    var baseUrl = baseRemoteUrl;
+    var baseUrl = baseLocalUrl;
 
     board.getBoardsForLoggedUser = function () {
         console.log(baseUrl + '/boards/' + $window.sessionStorage.token);
@@ -19,7 +19,7 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
 
     board.deleteBoard = function (model) {
         console.log(model);
-        return $http.delete(baseUrl + '/boards/delete/' + $window.sessionStorage.token, model);
+        return $http.delete(baseUrl + '/boards/'+model.Id+'/' + $window.sessionStorage.token);
     };
     board.getBoard = function (id) {
         return $http.get(baseUrl + '/board/' + id + '/' + $window.sessionStorage.token);

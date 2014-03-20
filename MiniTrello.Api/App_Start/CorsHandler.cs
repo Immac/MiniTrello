@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using AttributeRouting.Helpers;
 
 namespace MiniTrello.Api
 {
@@ -31,8 +33,17 @@ namespace MiniTrello.Api
                     {
                         response.Headers.Add(AccessControlAllowMethods, accessControlRequestMethod);
                     }
-
-                    string requestedHeaders = string.Join(", ", request.Headers.GetValues(AccessControlRequestHeaders));
+                    string requestedHeaders = string.Empty;
+                    try
+                    {
+                        requestedHeaders = string.Join(", ", request.Headers.GetValues(AccessControlRequestHeaders));
+                    }
+                    catch (Exception e)
+                    {
+                        requestedHeaders = string.Empty;
+                    }
+                    
+                    
                     if (!string.IsNullOrEmpty(requestedHeaders))
                     {
                         response.Headers.Add(AccessControlAllowHeaders, requestedHeaders);
