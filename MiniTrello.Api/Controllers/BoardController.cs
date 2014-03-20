@@ -117,6 +117,7 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = ErrorStrings.BoardDoesNotExist
                 };
             }
+            editedBoard.AddMemberAccount(accountFromSession);
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
             if (card == null)
             {

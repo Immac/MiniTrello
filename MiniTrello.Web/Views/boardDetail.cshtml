@@ -3,46 +3,55 @@
     This is the board detail
 </div>
 
-/for each lane in the board
-
 
 <div class="container">
+    
     <div class="row">
         <div class="row">
-            <button ng-click="" ng-init="count=0">
-                TODO: Add Lane 
-            </button>
         </div>
         <!-- Boxes de Acoes -->
-        <div class="col-xs-12 col-sm-6 col-lg-4">
-            <div class="divider">
-                <div class="icon-next">
-                    <div >
-                        <h3 class="title">Lane Name</h3>
+        <div ng-repeat="lane in BoardDetailModel.Lanes">
+            
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <div class="divider">
+                    <div class="icon-next">
                         <div>
-                            <div class="row">
-                                <button ng-click="" ng-init="count=0">
-                                    TODO: AddCard
-                                </button>
+                            <h3 class="title">Id: {{lane.Id}}, {{lane.Name}}</h3>
+                            <div>
+                                <div ng-repeat="card in lane.Cards">
+                                    <h4>Id:{{card.Id}}, {{card.Name}}</h4>
+                                    <p>{{card.Content}}</p>
+                                </div>
+                               
+                                
                             </div>
-                            /foreach card in lane
-                            <p>Card Description</p>
+
                         </div>
-                        
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <input type="text" name="newLane" placeholder="Lane Name" ng-model="LaneCreateModel.Title" id="createLane" class="form-control">
-            <button ng-click="CreateLane()" class="btn-lg btn-success">Create Lane</button>
-            <input type="number" placeholder="Lane ID" name="deleteLane" ng-model="LaneDeleteModel.Id" id="deleteLane" class="form-control">
-            <button ng-click="DeleteLane()" class="btn-lg btn-warning">Delete Lane</button>
+
+        <div class="form-group">
+            <div class="form-group">
+                <input type="text" name="newLane" placeholder="Lane Name" ng-model="LaneCreateModel.Name" id="createLane" class="form-control">
+                <button ng-click="CreateLane()" class="btn-lg btn-success">Create Lane</button>    
+            </div>      
+            <div class="form-group">
+                <input type="number" placeholder="Lane ID" name="deleteLane" ng-model="LaneDeleteModel.Id" id="deleteLane" class="form-control">
+                <button ng-click="DeleteLane()" class="btn-lg btn-warning">Delete Lane</button>    
+            </div>
+            <div class="form-group">
+                <input type="number" name="newAddToLane" placeholder="Lane Id" ng-model="CardCreateModle.LaneId" id="createAddToLane" class="form-control">
+                <input type="text" name="newCard" placeholder="Card Name" ng-model="CardCreateModel.Name" id="createCard" class="form-control">
+                <input type="text" name="content" placeholder="What this card is about." ng-model="CardCreateModel.Content" id="createCard" class="form-control">
+                <button ng-click="CreateCard()" class="btn-lg btn-success">Create Card</button>    
+            </div>
+            <div class="form-group">
+                <input type="number" placeholder="Card ID" name="deleteCard" ng-model="CardDeleteModel.Id" id="deleteCard" class="form-control">
+                <button ng-click="DeleteCard()" class="btn-lg btn-warning">Delete Card</button>    
+            </div>
             
-            <input type="text" name="newCard" placeholder="Card Name" ng-model="CardCreateModel.Title" id="createCard" class="form-control">
-            <button ng-click="CreateCard()" class="btn-lg btn-success">Create Card</button>
-            <input type="number" placeholder="Card ID" name="deleteCard" ng-model="CardDeleteModel.Id" id="deleteCard" class="form-control">
-            <button ng-click="DeleteCard()" class="btn-lg btn-warning">Delete Card</button>
         </div>
         <!-- /Boxes de Acoes -->
     </div>
