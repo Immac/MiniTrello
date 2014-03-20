@@ -10,18 +10,24 @@
                     <div class="col-xs-9 col-md-9 section-box">
                         <a href="/board/{{board.Id}}">
                             <h2>
-                                Title: {{board.Title}}
+                                {{board.Title}}
                             </h2>
                         </a>
-                        <p>
-                             {{board.Description}}
+                        <p> Board delete confirmation number: {{board.Id}}
+                            
                         </p>
-
                         <hr />
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="col-md-6">
+        <div class="row">
+            <input type="text" name="newBoard" ng-model="BoardCreateModel.Title" id="newBoard" class="form-control">
+            <button ng-click="CreateBoard()" class="btn-lg btn-success">Create board</button>
+            <input type="number" name="delete" ng-model="BoardDeleteModel.Id" id="deleteBoard" class="form-control">
+            <button ng-click="DeleteBoard()" class="btn-lg btn-warning">Delete Board</button>
+        </div>
+     </div>
+   </div>

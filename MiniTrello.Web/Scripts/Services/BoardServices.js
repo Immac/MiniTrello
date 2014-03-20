@@ -12,6 +12,13 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
         return $http.get(baseUrl + '/boards/' + $window.sessionStorage.token);
     };
 
+    board.createBoard = function (model) {
+        return $http.post(baseUrl + '/boards/create/' + $window.sessionStorage.token,model);
+    };
+
+    board.deleteBoard = function(model) {
+        return $http.delete(baseUrl + 'boards/delete/' + $window.sessionStorage.token, model);
+    };
     return board;
 
 }]);

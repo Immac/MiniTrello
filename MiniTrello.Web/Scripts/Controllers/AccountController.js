@@ -12,8 +12,10 @@ angular.module('app.controllers')
 
         $scope.hasError = false;
         $scope.errorMessage = '';
+        if($scope.accountName == null)
+            $scope.accountName = { Name: '' };
 
-        $scope.isLogged = function() {
+        $scope.isLogged = function () {
             return $window.sessionStorage.token != null;
         };
         
@@ -21,7 +23,6 @@ angular.module('app.controllers')
 
     $scope.registerModel = { Email: '', Password: '', FirstName: '', LastName: '', ConfirmPassword: '' };
     $scope.errorMessage = '';
-
         $scope.login = function () {
 
             AccountServices
@@ -34,6 +35,7 @@ angular.module('app.controllers')
                       $scope.hasError = true;
                       $scope.errorMessage = data.ErrorMessage;
                       alert(data.ErrorMessage);
+                      delete $window.sessionStorage.token;
                   } else {
                       $scope.hasError = false;
                       $window.sessionStorage.token = data.Token;
@@ -44,12 +46,8 @@ angular.module('app.controllers')
                   
               })
               .error(function (data, status, headers, config) {
-                // Erase the token if the user fails to log in
-                //delete $window.sessionStorage.token;
-               
                 $scope.hasError = true;
-                // Handle login errors here
-                $scope.message = 'Error: Invalid user or password';
+                $scope.message = 'Error: An unexpected error has occured, pleas contact the system administrator';
             });
             //$location.path('/');
         };

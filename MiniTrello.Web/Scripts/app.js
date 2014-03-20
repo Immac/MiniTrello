@@ -49,6 +49,16 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
                 templateUrl: '/views/boardDetail',
                 controller: 'BoardController'
             })
+            .state('boardCreateLane', {
+                url: '/boards/createLane',
+                templateUrl: '/views/newLane',
+                controller: 'BoardController'
+            })
+            .state('boardCreate', {
+                url: '/boards/create',
+                templateUrl: '/views/newBoard',
+                controller: 'BoardController'
+            })
             .state('otherwise', {
                 url: '*path',
                 templateUrl: '/views/404',
