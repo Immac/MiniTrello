@@ -9,10 +9,12 @@ angular.module('app.services',[]).factory('AccountServices', ['$http', function 
     var baseUrl = baseRemoteUrl;
 
     account.login = function (model) {
+        console.log(model);
         return $http.post(baseUrl + '/login', model);
     };
 
     account.register = function (model) {
+        console.log(model);
         return $http.post(baseUrl + '/register', model);
     };
 

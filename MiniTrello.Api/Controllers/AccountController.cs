@@ -120,7 +120,8 @@ namespace MiniTrello.Api.Controllers
             foreach (var board in boardsList)
             {
                 var boardModel = _mappingEngine.Map<Board,BoardModel>(board);
-                getBoardsModel.AddBoard(boardModel);
+                if(!boardModel.IsArchived)
+                    getBoardsModel.AddBoard(boardModel);
             }
             return getBoardsModel;
         }

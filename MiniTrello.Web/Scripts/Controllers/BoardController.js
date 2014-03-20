@@ -13,7 +13,7 @@ angular.module('app.controllers')
     
         $scope.boardDetailId = $stateParams.boardId;
         $scope.BoardCreateModel = {Title: ''};
-        $scope.BoardDeleteModel = { Id : '', IsArchived : true };
+        $scope.BoardDeleteModel = { Id : 0, IsArchived : true };
         
         console.log($scope.boardDetailId);
     
