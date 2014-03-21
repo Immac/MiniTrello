@@ -24,10 +24,7 @@
                                             <p>{{card.Content}}</p>
                                         </div>
                                     </div>
-
-
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -54,7 +51,15 @@
                 <input type="number" placeholder="Card ID" name="deleteCard" ng-model="CardDeleteModel.Id" id="deleteCard" class="form-control">
                 <button ng-click="DeleteCard()" class="btn-lg btn-warning">Delete Card</button>    
             </div>
-            
+            <div class ="row">
+                <h2>Members: </h2>
+                <div ng-repeat="member in BoardDetailModel.MemberAccounts">
+                    <h3>{{member.FirstName}} {{member.LastName}}</h3>
+                    <p>{{member.Email}}</p>
+                </div>
+                <input type="email" placeholder="Member's 'email'" name="inviteMember" ng-model="MemberAddModel.MemberEmail" id="inviteMember" class="form-control">
+                <button ng-click="AddMember()" class="btn-lg btn-warning">Add Board Member</button>    
+            </div>
         </div>
         <!-- /Boxes de Acoes -->
     </div>

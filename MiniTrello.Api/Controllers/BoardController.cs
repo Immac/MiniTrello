@@ -449,11 +449,11 @@ namespace MiniTrello.Api.Controllers
         }
 
         
-       
+        [AcceptVerbs("PUT")]
         [PUT("boards/addmember/{accessToken}")]
         public BoardModel AddMember([FromBody]AddMemberBoardModel model,string accessToken)
         {
-            var memberToAdd = _readOnlyRepository.GetById<Account>(model.MemberID);
+            var memberToAdd = FindCorrespondingAccount(model.MemberEmail);
             if (memberToAdd == null)
             {
                 return new BoardModel
@@ -499,6 +499,7 @@ namespace MiniTrello.Api.Controllers
             }
             board.Log = board.Log + myAccount.FirstName + " addMember " + memberToAdd.FirstName + " ";
             board.AddMemberAccount((memberToAdd));
+            _writeOnlyRepository.Update(board);
             var updatedBoard = _writeOnlyRepository.Update(board);
             return _mappingEngine.Map<Board, BoardModel>(updatedBoard);
         }
@@ -723,5 +724,21 @@ namespace MiniTrello.Api.Controllers
             }            
             return membersModel;
         }
+        private Account FindCorrespondingAccount(AccountLoginModel model)
+        {
+            var myAES = new SimpleAES();
+            var account = _readOnlyRepository.First<Account>(
+                account1 => account1.Email == model.Email);
+            if (account == null) return null;
+            var accountPassword = myAES.DecryptString(account.Password);
+            return accountPassword != model.Password ? null : account;
+        }
+        private Account FindCorrespondingAccount(string email)
+        {
+            var account = _readOnlyRepository.First<Account>(
+                account1 => account1.Email == email);
+            return account;
+        }
     }
+
 }

@@ -2,7 +2,7 @@
 {
     public class AddMemberBoardModel
     {
-        public long MemberID { get; set; }
+        public string MemberEmail { get; set; }
         public long BoardID { get; set; }
     }
 }

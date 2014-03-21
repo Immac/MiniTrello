@@ -200,6 +200,34 @@ angular.module('app.controllers')
             //$location.path('/');
         };
 
+        $scope.AddMember = function () {
+            $scope.MemberAddModel.BoardID = $stateParams.boardId;
+            boardServices.addMember($scope.MemberAddModel)
+              .success(function (data, status, headers, config) {
+                  console.log("data sent:");
+                  console.log($scope.MemberAddModel);
+                  console.log("data recieved:");
+                  console.log(data);
+
+                  if (data.ErrorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
+                  } else {
+                      $scope.hasError = false;
+                      $scope.getBoardsForLoggedUser();
+                      $scope.MemberAddModel = '';
+                      $scope.GetBoard();
+                  }
+
+              })
+              .error(function (data, status, headers, config) {
+                  $scope.hasError = true;
+                  $scope.message = 'Error: an unexpected error has occured.';
+              });
+            //$location.path('/');
+        };
+
     if ($scope.boardDetailId > 0){
         $scope.selectedBoard = $.grep($scope.boards, function (e) { return e.id == id; });
         console.log("selected board:");
