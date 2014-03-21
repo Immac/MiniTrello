@@ -36,7 +36,7 @@ namespace MiniTrello.Data
         public T GetById<T>(long id) where T : class, IEntity
         {
             T item = _session.Get<T>(id);
-            if (item.IsArchived) return null;
+            if (item == null || item.IsArchived) return null;
             return item;
         } 
 

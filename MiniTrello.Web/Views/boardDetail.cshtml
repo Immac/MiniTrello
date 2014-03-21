@@ -11,21 +11,24 @@
         </div>
         <!-- Boxes de Acoes -->
         <div ng-repeat="lane in BoardDetailModel.Lanes">
-            
-            <div class="col-xs-12 col-sm-6 col-lg-4">
-                <div class="divider">
-                    <div class="icon-next">
-                        <div>
-                            <h3 class="title">Id: {{lane.Id}}, {{lane.Name}}</h3>
+            <div ng-hide="lane.IsArchived">
+                <div class="col-xs-12 col-sm-6 col-lg-4">
+                    <div class="divider">
+                        <div class="icon-next">
                             <div>
-                                <div ng-repeat="card in lane.Cards">
-                                    <h4>Id:{{card.Id}}, {{card.Name}}</h4>
-                                    <p>{{card.Content}}</p>
-                                </div>
-                               
-                                
-                            </div>
+                                <h3 class="title">Lane {{lane.Id}}, {{lane.Name}}</h3>
+                                <div>
+                                    <div ng-repeat="card in lane.Cards">
+                                        <div ng-hide="card.IsArchived">
+                                            <h4>Card {{card.Id}}, {{card.Name}}</h4>
+                                            <p>{{card.Content}}</p>
+                                        </div>
+                                    </div>
 
+
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -38,11 +41,11 @@
                 <button ng-click="CreateLane()" class="btn-lg btn-success">Create Lane</button>    
             </div>      
             <div class="form-group">
-                <input type="number" placeholder="Lane ID" name="deleteLane" ng-model="LaneDeleteModel.Id" id="deleteLane" class="form-control">
+                <input type="number" placeholder="Lane ID" name="deleteLane" ng-model="LaneDeleteModel.LaneId" id="deleteLane" class="form-control">
                 <button ng-click="DeleteLane()" class="btn-lg btn-warning">Delete Lane</button>    
             </div>
             <div class="form-group">
-                <input type="number" name="newAddToLane" placeholder="Lane Id" ng-model="CardCreateModle.LaneId" id="createAddToLane" class="form-control">
+                <input type="number" name="newAddToLane" placeholder="Lane Id" ng-model="CardCreateModel.LaneId" id="createAddToLane" class="form-control">
                 <input type="text" name="newCard" placeholder="Card Name" ng-model="CardCreateModel.Name" id="createCard" class="form-control">
                 <input type="text" name="content" placeholder="What this card is about." ng-model="CardCreateModel.Content" id="createCard" class="form-control">
                 <button ng-click="CreateCard()" class="btn-lg btn-success">Create Card</button>    

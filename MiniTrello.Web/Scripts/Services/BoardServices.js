@@ -30,7 +30,9 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
     };
     board.deleteLane = function (model) {
         console.log(model);
-        return $http.delete(baseUrl + '/boards/deletelane/' + $window.sessionStorage.token, model);
+        console.log(baseUrl + '/boards/deletelane/' + model.LaneId + '/' + $window.sessionStorage.token);
+        return $http.delete(baseUrl + '/boards/deletelane/' + model.LaneId + '/' + $window.sessionStorage.token);
+
     };
     board.createCard = function (model) {
         console.log(model);

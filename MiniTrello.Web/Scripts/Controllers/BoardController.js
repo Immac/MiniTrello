@@ -14,8 +14,8 @@ angular.module('app.controllers')
         $scope.boardDetailId = $stateParams.boardId;
         $scope.BoardCreateModel = {Title: ''};
         $scope.BoardDeleteModel = { Id : 0, IsArchived : true };
-        $scope.LaneCreateModel = {BoardId: 0,Name :''};
-
+        $scope.LaneCreateModel = { BoardId: 0, Name: '' };
+        //$scope.LaneDeleteModel = {LaneID,IsArchived: true};
         console.log($scope.boardDetailId);
     
         $scope.boards = [];
@@ -145,7 +145,7 @@ angular.module('app.controllers')
             //$location.path('/');
             };
         $scope.CreateCard = function () {
-            $scope.CardCreateModel.LaneId = $stateParams.boardId;
+           
             boardServices.createCard($scope.CardCreateModel)
               .success(function (data, status, headers, config) {
                   console.log("data sent:");
@@ -171,6 +171,35 @@ angular.module('app.controllers')
               });
             //$location.path('/');
         };
+
+        $scope.DeleteLane = function () {
+            $scope.LaneDeleteModel.IsArchived = true;
+            boardServices.deleteLane($scope.LaneDeleteModel)
+              .success(function (data, status, headers, config) {
+                  console.log("data sent:");
+                  console.log($scope.LaneDeleteModel);
+                  console.log("data recieved:");
+                  console.log(data);
+
+                  if (data.ErrorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
+                  } else {
+                      $scope.hasError = false;
+                      $scope.getBoardsForLoggedUser();
+                      $scope.LaneDeleteModel = '';
+                      $scope.GetBoard();
+                  }
+
+              })
+              .error(function (data, status, headers, config) {
+                  $scope.hasError = true;
+                  $scope.message = 'Error: an unexpected error has occured.';
+              });
+            //$location.path('/');
+        };
+
     if ($scope.boardDetailId > 0){
         $scope.selectedBoard = $.grep($scope.boards, function (e) { return e.id == id; });
         console.log("selected board:");
