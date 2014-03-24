@@ -94,7 +94,7 @@ namespace MiniTrello.Api.Controllers
         }
 
 
-        [GET("organizations")]
+        [GET("organizations/{token}")]
         public GetOrganizationsModel GetOrganizations(string token)
         {
             var session = Security.VerifiySession(token, _readOnlyRepository);
