@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('app.services',[]).factory('AccountServices', ['$http', function ($http) {
+angular.module('app.services',[]).factory('AccountServices', ['$http','$window', function ($http,$window) {
 
     var account = {};
 
@@ -18,6 +18,11 @@ angular.module('app.services',[]).factory('AccountServices', ['$http', function 
         return $http.post(baseUrl + '/register', model);
     };
 
+    account.EditProfile = function(model) {
+        console.log("editProfile:" + model);
+        console.log(baseUrl + '/profile/edit/' + $window.sessionStorage.token);
+        return $http.put(baseUrl + '/profile/edit/' + $window.sessionStorage.token, model);
+    };
 
     return account;
 

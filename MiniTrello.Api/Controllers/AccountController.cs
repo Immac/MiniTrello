@@ -257,16 +257,13 @@ namespace MiniTrello.Api.Controllers
                 accountFromSession.FirstName = accountEditModel.FirstName;
             if(accountEditModel.LastName != "")
                 accountFromSession.LastName = accountEditModel.LastName;
+            var aes = new SimpleAES();
             if (accountEditModel.Password == accountEditModel.ConfirmPassword && accountEditModel.Password.Length > 8)
-                accountFromSession.Password = accountEditModel.Password;
+                accountFromSession.Password = aes.EncryptToString(accountEditModel.Password);
 
             _writeOnlyRepository.Update(accountFromSession);
             return _mappingEngine.Map<Account, EditedProfileModel>(accountFromSession);
         }
-
-
-        
-
 
         private Account FindCorrespondingAccount(AccountLoginModel model)
         {

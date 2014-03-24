@@ -59,6 +59,9 @@ angular.module('app.controllers')
     $scope.goToLogin = function() {
         $location.path('/login');
     };
+    $scope.goToBoards = function () {
+        $location.path('/boards');
+    };
 
     $scope.register = function() {
         AccountServices
@@ -78,6 +81,30 @@ angular.module('app.controllers')
                 $scope.errorMessage = 'An unexpected ERROR has occured.';
             });
     };
+
+    $scope.editProfile = function () {
+        AccountServices
+            .EditProfile($scope.profileEditModel)
+            .success(function (data, status, headers, config) {
+                console.log("editeProfile: ");
+                console.log(data);
+                if (data.ErrorCode != 0) {
+                    $scope.hasError = true;
+                    $scope.errorMessage = data.ErrorMessage;
+                } else {
+                    $scope.goToBoards();
+                }
+            })
+            .error(function (data, status, headers, config) {
+                console.log(data);
+                $scope.hasError = true;
+                $scope.errorMessage = 'An unexpected ERROR has occured.';
+            });
+        
+
+    };
+
+
     console.log($scope.accountName);
         $scope.$on('$viewContentLoaded', function () {
             $window.ga('send', 'pageview', { 'page': $location.path(), 'title': $scope.$root.title });
