@@ -1,9 +1,9 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Linq;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
 using MiniTrello.Api.Controllers.Helpers;
+using MiniTrello.Domain.DataObjects;
 using MiniTrello.Domain.Entities;
 using MiniTrello.Domain.Services;
 
@@ -24,17 +24,42 @@ namespace MiniTrello.Api.Controllers
         }
 
         [POST("organizations/create/{token}")]
-        public HttpResponseMessage CreateOrganization([FromBody]OrganizationCreateModel model, string token)
+        public GetOrganizationsModel CreateOrganization([FromBody]OrganizationCreateModel model, string token)
         {
-            Session session = Security.VerifiySession(token, _readOnlyRepository);
-            Security.IsTokenExpired(session);
-            Organization organization = _mappingEngine.Map<OrganizationCreateModel,Organization>(model);
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+                return new GetOrganizationsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
+                };
+            if (Security.IsTokenExpired(session))
+                return new GetOrganizationsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            var organization = _mappingEngine.Map<OrganizationCreateModel,Organization>(model);
             
-            Account myAccount = Security.GetAccountFromSession(session, _readOnlyRepository);
-            Organization newOrganization = _writeOnlyRepository.Create(organization);
-            myAccount.AddOrganization(newOrganization);
-            _writeOnlyRepository.Update(myAccount);
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+                return new GetOrganizationsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+            var newOrganization = _writeOnlyRepository.Create(organization);
+            accountFromSession.AddOrganization(newOrganization);
+            _writeOnlyRepository.Update(accountFromSession);
+
+            var getOrganizations = accountFromSession.Organizations.ToList();
+            var getOrganizationsModel = new GetOrganizationsModel();
+            foreach (var organization1 in getOrganizations)
+            {
+                if (!organization1.IsArchived)
+                    getOrganizationsModel.AddName(organization1.Name);
+            }
+            return getOrganizationsModel;
         }
 
     }
