@@ -25,13 +25,29 @@ angular.module('app.controllers')
                 .getOrganizationsForLoggedUser()
               .success(function (data, status, headers, config) {
                   $scope.organizations = data;
-                  console.log("Organizations");
+                  console.log("Organizations returned data:");
                   console.log(data);
                 })
               .error(function (data, status, headers, config) {
                   console.log(data);
               });
         };
+
+    $scope.CreateOrganization = function() {
+            
+        organizationServices
+                .createOrganization($scope.OrganizationCreateModel)
+              .success(function (data, status, headers, config) {
+                  $scope.organizations = data;
+                  console.log("Organizations returned data:");
+                  console.log(data);
+                $scope.getOrganizationsForLoggedUser();
+            })
+              .error(function (data, status, headers, config) {
+                  console.log(data);
+              });
+    };
+        
 
         //if ($scope.boardDetailId > 0) {
         //    //get board details

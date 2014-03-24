@@ -1,5 +1,5 @@
 ﻿<div class="container">
-    <div class="row" ng-repeat="organization in organizations">
+    <div class="row" ng-repeat="organization in organizations.NamesDescription">
         <div class="col-md-6">
             <div class="well well-sm">
                 <div class="row">
@@ -22,6 +22,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <input type="text" name="newOrganizationName" placeholder="Organization Name" ng-model="OrganizationCreateModel.Name" id="newOrganizationName" class="form-control">
+            <input type="text" name="newOrganizationDesc" placeholder="Organization Description" ng-model="OrganizationCreateModel.Description" id="newOrganizationDesc" class="form-control">
+            <button ng-click="CreateOrganization()" class="btn-lg btn-success">Create Organization</button>
         </div>
     </div>
 </div>

@@ -386,8 +386,8 @@ namespace MiniTrello.Api.Controllers
             return boardsModel;
         }
         [AcceptVerbs("DELETE")]
-        [DELETE("boards/deletecard/{token}")]
-        public LaneModel DeleteCard([FromBody] CardDeleteModel model, string token)
+        [DELETE("boards/deletecard/{id}/{token}")]
+        public LaneModel DeleteCard(long id,string token)
         {
             var session = Security.VerifiySession(token, _readOnlyRepository);
             if (session == null)
@@ -415,7 +415,7 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = ErrorStrings.AccountDoesNotExist
                 };
             }
-            var card = _readOnlyRepository.First<Card>(card1 => card1.Id == model.CardId);
+            var card = _readOnlyRepository.First<Card>(card1 => card1.Id == id);
             if (card == null)
             {
                 return new LaneModel
@@ -564,7 +564,7 @@ namespace MiniTrello.Api.Controllers
             
             var newLane3 = new Lane
             {
-                Name = "Doing:"
+                Name = "Done:"
             };
             newLane3 = _writeOnlyRepository.Create(newLane3);
             newBoard.AddLane(newLane3);

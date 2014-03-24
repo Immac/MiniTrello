@@ -65,10 +65,4 @@ namespace MiniTrello.Api.Controllers
         }
 
     }
-
-    public class OrganizationCreateModel
-    {
-        public string Name { set; get; }
-        public string Description { set; get; }
-    }
 }

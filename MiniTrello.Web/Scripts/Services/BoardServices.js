@@ -40,7 +40,7 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
     };
     board.deleteCard = function (model) {
         console.log(model);
-        return $http.delete(baseUrl + '/boards/deletecard/' + $window.sessionStorage.token, model);
+        return $http.delete(baseUrl + '/boards/deletecard/'+model.Id+'/' + $window.sessionStorage.token);
     };
     board.addMember = function (model) {
         console.log(model);

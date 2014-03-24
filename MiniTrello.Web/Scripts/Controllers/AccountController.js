@@ -12,8 +12,7 @@ angular.module('app.controllers')
 
         $scope.hasError = false;
         $scope.errorMessage = '';
-        if($scope.accountName == null)
-            $scope.accountName = { Name: '' };
+        
 
         $scope.isLogged = function () {
             return $window.sessionStorage.token != null;
@@ -39,7 +38,7 @@ angular.module('app.controllers')
                   } else {
                       $scope.hasError = false;
                       $window.sessionStorage.token = data.Token;
-                      $scope.accountName.Name = 'Kogasa'; // TODO: get accname from object
+                      
                       console.log($scope.accountName);
                       $location.path('/boards');
                   }
