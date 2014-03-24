@@ -62,6 +62,7 @@
     <Compile Include="DataObjects\CardModel.cs" />
     <Compile Include="DataObjects\CardMoveModel.cs" />
     <Compile Include="DataObjects\Class1.cs" />
+    <Compile Include="DataObjects\Class2.cs" />
     <Compile Include="DataObjects\EditedProfileModel.cs" />
     <Compile Include="DataObjects\GetBoardsModel.cs" />
     <Compile Include="DataObjects\GetOrganizationsModel.cs" />

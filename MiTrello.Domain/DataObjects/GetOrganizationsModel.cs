@@ -6,15 +6,15 @@ namespace MiniTrello.Domain.DataObjects
     {
         public int ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
-        private readonly List<string> _nameList = new List<string>();
-        public IEnumerable<string> Names
+        private readonly List<OrganizationNameDescriptionModel> _nameDescriptionList = new List<OrganizationNameDescriptionModel>();
+        public IEnumerable<OrganizationNameDescriptionModel> NamesDescription
         {
-            get { return _nameList; }
+            get { return _nameDescriptionList; }
         }
-      
-        public void AddName(string name)
+
+        public void AddNameDescription(OrganizationNameDescriptionModel nameDescriptionModel)
         {
-            _nameList.Add(name);
+            _nameDescriptionList.Add(nameDescriptionModel);
         }
     }
 }

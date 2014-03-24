@@ -54,10 +54,12 @@ namespace MiniTrello.Api.Controllers
 
             var getOrganizations = accountFromSession.Organizations.ToList();
             var getOrganizationsModel = new GetOrganizationsModel();
-            foreach (var organization1 in getOrganizations)
+            foreach (var orga in getOrganizations)
             {
-                if (!organization1.IsArchived)
-                    getOrganizationsModel.AddName(organization1.Name);
+                var organizationNameDescriptionModel =
+                    _mappingEngine.Map<Organization, OrganizationNameDescriptionModel>(orga);
+                if (!orga.IsArchived)
+                    getOrganizationsModel.AddNameDescription(organizationNameDescriptionModel);
             }
             return getOrganizationsModel;
         }
