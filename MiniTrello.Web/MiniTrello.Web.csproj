@@ -166,6 +166,8 @@
     </Content>
     <Content Include="Scripts\Services\AccountServices.js" />
     <Content Include="Scripts\Services\BoardServices.js" />
+    <Content Include="Scripts\Controllers\OrganizationController.js" />
+    <Content Include="Scripts\Services\OrganizationServices.js" />
     <Content Include="Scripts\vendor\angular-csp.css" />
     <Content Include="Scripts\vendor\angular-ui-router.js" />
     <Content Include="Scripts\vendor\angular-ui-router.min.js" />
@@ -517,6 +519,7 @@
     <Content Include="Views\newBoard.cshtml" />
     <Content Include="Views\newCard.cshtml" />
     <Content Include="Views\newLane.cshtml" />
+    <Content Include="Views\organizations.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -542,6 +545,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MiniTrello.ApiWrapper\MiniTrello.ApiWrapper.csproj">
+      <Project>{4d3b418a-bc35-4037-8184-7d38a6b0101f}</Project>
+      <Name>MiniTrello.ApiWrapper</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

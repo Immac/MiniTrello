@@ -1,0 +1,27 @@
+﻿<div class="container">
+    <div class="row" ng-repeat="organization in organizations">
+        <div class="col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-xs-3 col-md-3 text-center">
+                        <img src="http://bootsnipp.com/apple-touch-icon-114x114-precomposed.png" alt="bootsnipp"
+                             class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-xs-9 col-md-9 section-box">
+                        <a href="/organization/{{organization.Id}}">
+                            <h2>
+                                {{organization.Name}}
+                            </h2>
+                        </a>
+
+                        <p>
+                            {{organization.Description}}
+                        </p>
+
+                        <hr />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

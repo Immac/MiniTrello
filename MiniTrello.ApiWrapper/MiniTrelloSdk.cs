@@ -18,8 +18,10 @@ namespace MiniTrello.ApiWrapper
 
         //Account Controls
         public static AccountAuthenticationModel Login(AccountLoginModel loginModel)
-        {
+        {   
+            
                 var client = new RestClient(BaseUrl);
+            
                 var request = InitRequest("/login", Method.POST, loginModel);
                 IRestResponse<AccountAuthenticationModel> response = client.Execute<AccountAuthenticationModel>(request);
                 ConfigurationManager.AppSettings["accessToken"] = response.Data.Token;

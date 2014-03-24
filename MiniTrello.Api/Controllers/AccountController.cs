@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Remoting.Messaging;
 using System.Web.Http;
 using AttributeRouting.Web.Http;
 using AutoMapper;
@@ -91,30 +93,67 @@ namespace MiniTrello.Api.Controllers
             };
         }
 
-        
+
+        [GET("organizations")]
+        public GetOrganizationsModel GetOrganizations(string token)
+        {
+            var session = Security.VerifiySession(token, _readOnlyRepository);
+            if (session == null)
+                return new GetOrganizationsModel
+                {
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer,
+                    ErrorCode = 1
+                };
+            if (Security.IsTokenExpired(session))
+                return new GetOrganizationsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
+                return new GetOrganizationsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
+                };
+
+            var getOrganizations = accountFromSession.Organizations.ToList();
+            var getOrganizationsModel = new GetOrganizationsModel();
+            foreach (var organization in getOrganizations)
+            {
+                if (!organization.IsArchived)
+                    getOrganizationsModel.AddName(organization.Name);
+            }
+            return getOrganizationsModel;
+        }
 
         [GET("boards/{token}")]
         public GetBoardsModel GetBoards(string token)
         {
             var session = Security.VerifiySession(token, _readOnlyRepository);
             if (session == null)
-            {
                 return new GetBoardsModel
                 {
                     ErrorCode = 1,
-                    ErrorMessage = "The session you are trying to reach does not exist on this server."
+                    ErrorMessage = ErrorStrings.SessionDoesNotExistOnThisServer
                 };
-            }
 
-            if(Security.IsTokenExpired(session))
+            if (Security.IsTokenExpired(session))
+                return new GetBoardsModel
+                {
+                    ErrorCode = 1,
+                    ErrorMessage = ErrorStrings.SessionHasExpired
+                };
+            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
+            if (accountFromSession == null)
             {
                 return new GetBoardsModel
                 {
                     ErrorCode = 1,
-                    ErrorMessage = "The session you are trying to reach has expired."
+                    ErrorMessage = ErrorStrings.AccountDoesNotExist
                 };
             }
-            var accountFromSession = Security.GetAccountFromSession(session, _readOnlyRepository);
             var boardsList = accountFromSession.Boards.ToList();
             var getBoardsModel = new GetBoardsModel();
             foreach (var board in boardsList)
@@ -280,4 +319,5 @@ namespace MiniTrello.Api.Controllers
             client.Execute(request);
         }
     }
+    
 }

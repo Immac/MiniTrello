@@ -64,6 +64,7 @@
     <Compile Include="DataObjects\Class1.cs" />
     <Compile Include="DataObjects\EditedProfileModel.cs" />
     <Compile Include="DataObjects\GetBoardsModel.cs" />
+    <Compile Include="DataObjects\GetOrganizationsModel.cs" />
     <Compile Include="DataObjects\LaneCreateModel.cs" />
     <Compile Include="DataObjects\LaneDeleteModel.cs" />
     <Compile Include="DataObjects\LaneModel.cs" />

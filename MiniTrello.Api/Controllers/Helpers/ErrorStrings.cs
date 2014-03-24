@@ -1,3 +1,4 @@
+
 namespace MiniTrello.Api.Controllers.Helpers
 {
     public class ErrorStrings
