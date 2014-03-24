@@ -253,9 +253,13 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = errorMessage
                 };
             }
-            accountFromSession.FirstName = accountEditModel.FirstName;
-            accountFromSession.LastName = accountEditModel.LastName;
-            accountFromSession.Password = accountEditModel.Password;
+            if(accountEditModel.FirstName != "")
+                accountFromSession.FirstName = accountEditModel.FirstName;
+            if(accountEditModel.LastName != "")
+                accountFromSession.LastName = accountEditModel.LastName;
+            if (accountEditModel.Password == accountEditModel.ConfirmPassword && accountEditModel.Password.Length > 8)
+                accountFromSession.Password = accountEditModel.Password;
+
             _writeOnlyRepository.Update(accountFromSession);
             return _mappingEngine.Map<Account, EditedProfileModel>(accountFromSession);
         }
