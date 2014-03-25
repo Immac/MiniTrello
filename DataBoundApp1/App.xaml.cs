@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Resources;
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using Minitrello.Phone.Resources;
-using Minitrello.Phone.ViewModels;
+using DataBoundApp1.Resources;
+using DataBoundApp1.ViewModels;
 
-namespace Minitrello.Phone
+namespace DataBoundApp1
 {
     public partial class App : Application
     {
         private static MainViewModel viewModel = null;
-        public static string Token { set; get; }
+
         /// <summary>
         /// A static ViewModel used by the views to bind against.
         /// </summary>
@@ -87,9 +86,9 @@ namespace Minitrello.Phone
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             // Ensure that application state is restored appropriately
-            if (!App.ViewModel.IsLogedIn)
+            if (!App.ViewModel.IsDataLoaded)
             {
-                
+                App.ViewModel.LoadData();
             }
         }
 

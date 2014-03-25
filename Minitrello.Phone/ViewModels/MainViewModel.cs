@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
+using System.Windows.Navigation;
 using Minitrello.Phone.Models;
 using Minitrello.Phone.Resources;
 using Newtonsoft.Json;
@@ -30,7 +31,7 @@ namespace Minitrello.Phone.ViewModels
         /// </summary>
         public ObservableCollection<ItemViewModel> Items { get; private set; }
 
-        public bool IsDataLoaded
+        public bool IsLogedIn
         {
             get;
             private set;
@@ -39,38 +40,76 @@ namespace Minitrello.Phone.ViewModels
         /// <summary>
         /// Creates and adds a few ItemViewModel objects into the Items collection.
         /// </summary>
-        public void LoadData()
+        public void Login(AccountLoginModel loginModel)
         {
-            if (IsDataLoaded == false)
+            if (IsLogedIn == false)
             {
-                Items.Add(new ItemViewModel() { ID = "0", LineOne = "Please Wait...", LineTwo = "Please wait while the catalog is downloaded from the server.", LineThree = null });
+                Items.Add(new ItemViewModel()
+                {
+                    ID = "0",
+                    LineOne = "Please Wait...",
+                    LineTwo = "Please wait while the server is contacted.",
+                    LineThree = null
+                });
                 var client = new RestClient(BaseApiUrl);
                 var request = new RestRequest("/login", Method.POST);
-                //request.AddHeader("Content-Type", "application/json");
                 request.RequestFormat = DataFormat.Json;
-                request.AddBody(loginStub);
+                request.AddBody(loginModel);
 
                 var asyncHandler = client.ExecuteAsync<AccountAuthenticationModel>(request, r =>
                 {
-                  if (r.ResponseStatus == ResponseStatus.Completed)
-                  {
-                      if (r.Data != null)
-                      {
-                          Token = r.Data.Token;
-                          Items.Clear();
-                          Items.Add(new ItemViewModel() { ID = "0", LineOne = Token });
-                          IsDataLoaded = true;
-                      }
-                  }
+                    if (r.ResponseStatus == ResponseStatus.Completed)
+                    {
+                        if (r.Data != null)
+                        {
+                            App.Token = r.Data.Token;
+                            Items.Clear();
+                            IsLogedIn = true;
+                        }
+                    }
                 });
             }
         }
 
-        private void Callback(IAsyncResult ar)
+        public void Boards()
         {
-           ar.ToString();
+            Items.Clear();
+            Items.Add(new ItemViewModel()
+            {
+                ID = "0",
+                LineOne = "Please Wait...",
+                LineTwo = "Please wait while the server is contacted.",
+                LineThree = null
+            });
+            var client = new RestClient(BaseApiUrl);
+            var request = new RestRequest("/boards", Method.GET);
+            request.RequestFormat = DataFormat.Json;
+            
+            var asyncHandler = client.ExecuteAsync<GetBoardsModel>(request, r =>
+            {
+                if (r.ResponseStatus == ResponseStatus.Completed)
+                {
+                    if (r.Data != null)
+                    {
+                        var id = 0;
+                        var boards = r.Data.Boards;
+                        Items.Clear();
+                        foreach (var board in boards)
+                        {
+                            Items.Add(new ItemViewModel
+                            {
+                                ID = (id++).ToString(),
+                                LineOne = board.Title,
+                                LineTwo = board.Id.ToString(),
+                                LineThree = board.MemberAccounts.ToString()
+                            }
+                                );
+                        }
+                        IsLogedIn = true;
+                    }
+                }
+            });
         }
-
         private void webClient_DownloadCatalogCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             try
@@ -91,7 +130,7 @@ namespace Minitrello.Phone.ViewModels
                             //LineThree = board.Description.Replace("\n", " ")
                         });
                     }
-                    IsDataLoaded = true;
+                    IsLogedIn = true;
                 }
             }
             catch (Exception ex)

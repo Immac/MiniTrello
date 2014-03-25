@@ -7,52 +7,34 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using Minitrello.Phone.Models;
-using Minitrello.Phone.Resources;
-using Minitrello.Phone.ViewModels;
+using DataBoundApp1.Resources;
 
-namespace Minitrello.Phone
+namespace DataBoundApp1
 {
-    public partial class MainPage : PhoneApplicationPage
+    public partial class DetailsPage : PhoneApplicationPage
     {
         // Constructor
-        public MainPage()
+        public DetailsPage()
         {
             InitializeComponent();
-
-            // Set the data context of the LongListSelector control to the sample data
-            DataContext = App.ViewModel;
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
 
-        // Load data for the ViewModel Items
+        // When page is navigated to set data context to selected item in list
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (LoginEmail.Text != "" && LoginPassword.Password.Length > 8)
+            if (DataContext == null)
             {
-                var loginModel = new AccountLoginModel
+                string selectedIndex = "";
+                if (NavigationContext.QueryString.TryGetValue("selectedItem", out selectedIndex))
                 {
-                    Email = LoginEmail.Text,
-                    Password = LoginPassword.Password,
-                    SessionDuration = 300
-                };
-                if (!App.ViewModel.IsLogedIn)
-                {
-                    App.ViewModel.Login(loginModel);
-                    NavigationService.Navigate(new Uri("/menu.xaml", UriKind.Relative));
+                    int index = int.Parse(selectedIndex);
+                    DataContext = App.ViewModel.Items[index];
                 }
             }
         }
-
-        // Handle selection changed on LongListSelector
-    
 
         // Sample code for building a localized ApplicationBar
         //private void BuildLocalizedApplicationBar()
