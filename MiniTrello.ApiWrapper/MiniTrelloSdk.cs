@@ -19,7 +19,6 @@ namespace MiniTrello.ApiWrapper
         //Account Controls
         public static AccountAuthenticationModel Login(AccountLoginModel loginModel)
         {   
-            
                 var client = new RestClient(BaseUrl);
             
                 var request = InitRequest("/login", Method.POST, loginModel);
