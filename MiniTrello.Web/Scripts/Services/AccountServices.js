@@ -6,7 +6,7 @@ angular.module('app.services',[]).factory('AccountServices', ['$http','$window',
 
     var baseRemoteUrl = "http://mcminitrelloapi.apphb.com/";
     var baseLocalUrl = "http://localhost:1416";
-    var baseUrl = baseRemoteUrl;
+    var baseUrl = baseLocalUrl;
 
     account.login = function (model) {
         console.log(model);

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Resources;
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
@@ -14,7 +12,7 @@ namespace Minitrello.Phone
 {
     public partial class App : Application
     {
-        private static MainViewModel viewModel = null;
+        private static MainViewModel _viewModel = null;
         public static string Token { set; get; }
         /// <summary>
         /// A static ViewModel used by the views to bind against.
@@ -25,10 +23,10 @@ namespace Minitrello.Phone
             get
             {
                 // Delay creation of the view model until necessary
-                if (viewModel == null)
-                    viewModel = new MainViewModel();
+                if (_viewModel == null)
+                    _viewModel = new MainViewModel();
 
-                return viewModel;
+                return _viewModel;
             }
         }
 

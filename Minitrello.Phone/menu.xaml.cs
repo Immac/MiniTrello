@@ -19,7 +19,8 @@ namespace Minitrello.Phone
 
         private void menuMyBoards_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Uri("/boards.xaml", UriKind.Relative));
+            if(App.ViewModel.IsLogedIn)
+                NavigationService.Navigate(new Uri("/boards.xaml", UriKind.Relative));
         }
     }
 }

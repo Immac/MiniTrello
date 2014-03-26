@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 
 namespace Minitrello.Phone
 {
@@ -15,15 +10,17 @@ namespace Minitrello.Phone
         public Boards()
         {
             InitializeComponent();
+            DataContext = App.ViewModel;
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            LoadBoards();
+            App.ViewModel.LoadBoards();
         }
 
-        private void LoadBoards()
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void MainLongListSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+            //Do Something?
         }
     }
 }

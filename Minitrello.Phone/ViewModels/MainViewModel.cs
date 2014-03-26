@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
-using System.Windows.Navigation;
+//using System.Web.Script.Serialization;
 using Minitrello.Phone.Models;
-using Minitrello.Phone.Resources;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -13,14 +11,30 @@ namespace Minitrello.Phone.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        const string BaseApiUrl = "http://mcminitrelloapi.apphb.com/";
-        public string Token = "";
-        public AccountLoginModel loginStub = new AccountLoginModel
+        private string _sampleProperty = "Sample Runtime Property Value";
+        /// <summary>
+        /// Sample ViewModel property; this property is used in the view to display its value using a Binding
+        /// </summary>
+        /// <returns></returns>
+        public string SampleProperty
         {
-            Email = "immac.gm@gmail.com",
-            Password = "123123123",
-            SessionDuration = 400
-        };
+            get
+            {
+                return _sampleProperty;
+            }
+            set
+            {
+                if (value != _sampleProperty)
+                {
+                    _sampleProperty = value;
+                    NotifyPropertyChanged("SampleProperty");
+                }
+            }
+        }
+
+        public ObservableCollection<ItemViewModel> Items { get; private set; }
+        const string BaseApiUrl = "http://mcminitrelloapi.apphb.com/";
+
         public MainViewModel()
         {
             Items = new ObservableCollection<ItemViewModel>();
@@ -29,7 +43,7 @@ namespace Minitrello.Phone.ViewModels
         /// <summary>
         /// A collection for ItemViewModel objects.
         /// </summary>
-        public ObservableCollection<ItemViewModel> Items { get; private set; }
+        
 
         public bool IsLogedIn
         {
@@ -65,6 +79,7 @@ namespace Minitrello.Phone.ViewModels
                             App.Token = r.Data.Token;
                             Items.Clear();
                             IsLogedIn = true;
+
                         }
                     }
                 });
@@ -145,6 +160,54 @@ namespace Minitrello.Phone.ViewModels
             }
         }
 
+        public void LoadBoards()
+        {
+            Items.Clear();
+            Items.Add(new ItemViewModel
+            {
+                ID = "0",
+                LineOne = "Please Wait...",
+                LineTwo = "Please wait while the server is contacted.",
+                LineThree = null
+            });
+            var client = new RestClient(BaseApiUrl);
+            var request = new RestRequest("/boards/" + App.Token , Method.GET);
+            request.RequestFormat = DataFormat.Json;
+            request.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; }; //HUH?
+            var asyncHandler = client.ExecuteAsync<GetBoardsModel>(request, r =>
+            {
+                if (r.ResponseStatus == ResponseStatus.Completed)
+                {
+                    if (r.Data != null)
+                    {
+                        var jsonData = r.Content;
+                        var allBoardsModel = JsonConvert.DeserializeObject<GetBoardsModel>(jsonData);
+                        var id = 0;
+                        var boards = allBoardsModel.Boards; 
+                        Items.Clear();
+                        foreach (var board in boards)
+                        {
+                            Items.Add(new ItemViewModel
+                            {
+                                ID = (id++).ToString(),
+                                LineOne = board.Title,
+                                LineTwo = board.Id.ToString(),
+                                LineThree = board.MemberAccounts.ToString()
+                            }
+                                );
+                        }
+                        if (id == 0)
+                        {
+                            Items.Add(new ItemViewModel
+                            {
+                                ID = "0",
+                                 LineOne = "Nothing here."
+                            });
+                        }
+                    }
+                }
+            });
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(String propertyName)
         {

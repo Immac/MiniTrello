@@ -48,6 +48,7 @@ namespace Minitrello.Phone
                     App.ViewModel.Login(loginModel);
                     NavigationService.Navigate(new Uri("/menu.xaml", UriKind.Relative));
                 }
+                
             }
         }
 
