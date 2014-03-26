@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using MiniTrello.Domain.DataObjects;
 
 namespace MiniTrello.Domain.Entities
 {
     public class Board : IEntity
     {
         private readonly IList<Lane> _lanes = new List<Lane>();
-        private readonly IList<Account> _memberAccounts = new List<Account>();
+        private readonly IList<AccountModel> _memberAccounts = new List<AccountModel>();
         private readonly IList<Account> _administratorAccounts = new List<Account>();
 
         public virtual Account OwnerAccount { set; get; }

@@ -499,8 +499,9 @@ namespace MiniTrello.Api.Controllers
             }
             board.Log = board.Log + myAccount.FirstName + " addMember " + memberToAdd.FirstName + " ";
             board.AddMemberAccount((memberToAdd));
-            _writeOnlyRepository.Update(board);
+            _writeOnlyRepository.Update(memberToAdd);
             var updatedBoard = _writeOnlyRepository.Update(board);
+             
             return _mappingEngine.Map<Board, BoardModel>(updatedBoard);
         }
        
