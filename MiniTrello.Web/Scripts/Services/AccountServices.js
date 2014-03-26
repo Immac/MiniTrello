@@ -23,6 +23,11 @@ angular.module('app.services',[]).factory('AccountServices', ['$http','$window',
         console.log(baseUrl + '/profile/edit/' + $window.sessionStorage.token);
         return $http.put(baseUrl + '/profile/edit/' + $window.sessionStorage.token, model);
     };
+    account.PasswordRestoreSend = function (model) {
+        console.log("PasswordRestoreSend:" + model);
+        console.log(baseUrl + '/restorepassword');
+        return $http.post(baseUrl + '/restorepassword', model);
+    };
 
     return account;
 

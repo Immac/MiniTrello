@@ -39,7 +39,7 @@ namespace MiniTrello.Api.Controllers.Helpers
                 return "The password confirmation and password fields do not match";
             }
 
-            if (model.Password.Count() < 8)
+            if (model.Password != null && model.Password.Count() < 8)
             {
                 return "Your password must contain 8 or more characters";
             }

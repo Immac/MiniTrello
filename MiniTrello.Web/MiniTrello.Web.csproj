@@ -521,6 +521,7 @@
     <Content Include="Views\newLane.cshtml" />
     <Content Include="Views\organizations.cshtml" />
     <Content Include="Views\profile.cshtml" />
+    <Content Include="Views\forgotpassword.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

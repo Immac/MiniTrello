@@ -70,6 +70,12 @@ angular.module('app', ['ui.router', 'app.filters', 'app.services', 'app.directiv
                 templateUrl: '/views/profile',
                 controller: 'AccountController'
             })
+            .state('forgotpassword', {
+                url: '/forgotpassword',
+                layout: 'basic',
+                templateUrl: '/views/forgotpassword',
+                controller: 'AccountController'
+            })
             .state('otherwise', {
                 url: '*path',
                 templateUrl: '/views/404',

@@ -62,6 +62,10 @@ angular.module('app.controllers')
     $scope.goToBoards = function () {
         $location.path('/boards');
     };
+    $scope.goToPasswordRestore = function (){
+        $location.path('/forgotpassword');
+    };
+
 
     $scope.register = function() {
         AccountServices
@@ -102,6 +106,34 @@ angular.module('app.controllers')
             });
         
 
+    };
+
+    $scope.passwordRestoreSend = function () {
+        AccountServices
+            .PasswordRestoreSend($scope.passwordRestoreModel)
+            .success(function (data, status, headers, config) {
+                console.log("editeProfile: ");
+                console.log(data);
+                if (data.ErrorCode != 0) {
+                    $scope.hasError = true;
+                    $scope.errorMessage = data.ErrorMessage;
+                } else {
+                    $scope.goToBoards();
+                }
+            })
+            .error(function (data, status, headers, config) {
+                console.log(data);
+                $scope.hasError = true;
+                $scope.errorMessage = 'An unexpected ERROR has occured.';
+            });
+
+
+    };
+
+
+    $scope.passwordRestoreUseCode = function () {
+        $window.sessionStorage.token = $scope.getAccessModel.Password;
+        $scope.goToBoards();
     };
 
 

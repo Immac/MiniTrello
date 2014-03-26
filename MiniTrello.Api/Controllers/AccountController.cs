@@ -170,14 +170,14 @@ namespace MiniTrello.Api.Controllers
         [POST("restorepassword")]
         public RestorePasswordModel RestorePassword(PasswordRestoreInputModel inputModel)
         {
-            if (RegexUtilities.IsValidEmail(inputModel.Email))
+           /* if (RegexUtilities.IsValidEmail(inputModel.Email))
             {
                 return new RestorePasswordModel
                 {
                     ErrorCode = 1,
                     ErrorMessage = "You have entered an invalid Email."
                 };
-            }
+            }*/
             var token = Security.CreateRestoreToken(inputModel.Email);
             var correspondingAccount = FindCorrespondingAccount(inputModel.Email);
             if (correspondingAccount == null)
@@ -253,12 +253,13 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = errorMessage
                 };
             }
-            if(accountEditModel.FirstName != "")
+            if(!string.IsNullOrEmpty(accountEditModel.FirstName))
                 accountFromSession.FirstName = accountEditModel.FirstName;
-            if(accountEditModel.LastName != "")
+            if(!string.IsNullOrEmpty(accountEditModel.LastName))
                 accountFromSession.LastName = accountEditModel.LastName;
             var aes = new SimpleAES();
-            if (accountEditModel.Password == accountEditModel.ConfirmPassword && accountEditModel.Password.Length > 8)
+            
+            if (accountEditModel.Password != null && (accountEditModel.Password == accountEditModel.ConfirmPassword && accountEditModel.Password.Length > 8))
                 accountFromSession.Password = aes.EncryptToString(accountEditModel.Password);
 
             _writeOnlyRepository.Update(accountFromSession);
@@ -317,7 +318,7 @@ namespace MiniTrello.Api.Controllers
             request.AddParameter("from", "MiniTrello MC <postmaster@sandbox37840.mailgun.org>");
             request.AddParameter("to", email);
             request.AddParameter("subject","Password restore");
-            request.AddParameter("text", "To restore your password, please visit http://mcminitrelloapi.apphb.com/boards/" + token);
+            request.AddParameter("text", "To restore your password, please use this code: " + token);
             request.Method = Method.POST;
             client.Execute(request);
         }
