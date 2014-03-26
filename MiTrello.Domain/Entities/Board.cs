@@ -6,8 +6,8 @@ namespace MiniTrello.Domain.Entities
     public class Board : IEntity
     {
         private readonly IList<Lane> _lanes = new List<Lane>();
-        private readonly IList<AccountModel> _memberAccounts = new List<AccountModel>();
-        private readonly IList<Account> _administratorAccounts = new List<Account>();
+        private readonly IList<AccountShell> _memberAccounts = new List<AccountShell>();
+        private readonly IList<AccountShell> _administratorAccounts = new List<AccountShell>();
 
         public virtual Account OwnerAccount { set; get; }
         public virtual string Title { get; set; }
@@ -18,11 +18,11 @@ namespace MiniTrello.Domain.Entities
         {
             get { return _lanes; }
         }
-        public virtual IEnumerable<Account> AdministratorAccounts
+        public virtual IEnumerable<AccountShell> AdministratorAccounts
         {
             get { return _administratorAccounts; }
         }
-        public virtual IEnumerable<Account> MemberAccounts
+        public virtual IEnumerable<AccountShell> MemberAccounts
         {
             get { return _memberAccounts; }
         }
@@ -34,7 +34,7 @@ namespace MiniTrello.Domain.Entities
                 _lanes.Add(lane);
             }
         }
-        public virtual void AddMemberAccount(Account member)
+        public virtual void AddMemberAccount(AccountShell member)
         {
             if (!_memberAccounts.Contains(member))
             {
@@ -42,7 +42,7 @@ namespace MiniTrello.Domain.Entities
             }
         }
 
-        public virtual void AddAdministratorAccount(Account admin)
+        public virtual void AddAdministratorAccount(AccountShell admin)
         {
             if (!_administratorAccounts.Contains(admin))
             {

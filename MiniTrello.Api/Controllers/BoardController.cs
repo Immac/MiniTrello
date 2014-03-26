@@ -117,7 +117,8 @@ namespace MiniTrello.Api.Controllers
                     ErrorMessage = ErrorStrings.BoardDoesNotExist
                 };
             }
-            editedBoard.AddMemberAccount(accountFromSession);
+            var accountShell = _mappingEngine.Map<Account,AccountShell>(accountFromSession);
+            editedBoard.AddMemberAccount(accountShell);
             var card = _mappingEngine.Map<CardCreateModel, Card>(model);
             card = _writeOnlyRepository.Create(card);
             if (card == null)
@@ -498,7 +499,8 @@ namespace MiniTrello.Api.Controllers
                 };
             }
             board.Log = board.Log + myAccount.FirstName + " addMember " + memberToAdd.FirstName + " ";
-            board.AddMemberAccount((memberToAdd));
+            var accountShell = _mappingEngine.Map<Account, AccountShell>(memberToAdd);
+            board.AddMemberAccount(accountShell);
             _writeOnlyRepository.Update(memberToAdd);
             var updatedBoard = _writeOnlyRepository.Update(board);
              
@@ -716,11 +718,12 @@ namespace MiniTrello.Api.Controllers
                     ErrorCode = 1
                 };
             }
-            List<Account> myMemberList = myBoard.MemberAccounts.ToList();
+            
+            var myMemberList = myBoard.MemberAccounts.ToList();
             var membersModel = new GetMembersModel();
             foreach (var member in myMemberList)
             {
-                var memberModel = _mappingEngine.Map<Account, MemberModel>(member);
+                var memberModel = _mappingEngine.Map<AccountShell, MemberModel>(member);
                 membersModel.AddMember(memberModel);
             }            
             return membersModel;

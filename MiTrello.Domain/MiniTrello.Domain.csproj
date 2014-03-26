@@ -77,6 +77,7 @@
     <Compile Include="DataObjects\PasswordRestoreInputModel.cs" />
     <Compile Include="DataObjects\RegisterConfirmationModel.cs" />
     <Compile Include="DataObjects\RestorePasswordModel.cs" />
+    <Compile Include="Entities\AccountShell.cs" />
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\Board.cs" />
     <Compile Include="Entities\Card.cs" />

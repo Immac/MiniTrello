@@ -39,7 +39,8 @@ namespace MiniTrello.DatabaseDeployer
                         _session.Save(lane);
                         board.AddLane(lane);    
                     }
-                    board.AddAdministratorAccount(account);
+                  
+                
                     _session.Save(board);
                 }
                 foreach (var organization in organizations)
