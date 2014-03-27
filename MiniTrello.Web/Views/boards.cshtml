@@ -30,6 +30,10 @@
             <button ng-click="CreateBoard()" class="btn-lg btn-success">Create board</button>
             <input type="number" placeholder="Board ID" name="delete" ng-model="BoardDeleteModel.Id" id="deleteBoard" class="form-control">
             <button ng-click="DeleteBoard()" class="btn-lg btn-warning">Delete Board</button>
+            <input type="number" placeholder="Board ID" name="renameid" ng-model="BoardRenameModel.Id" id="renameid" class="form-control">
+            <input type="text" placeholder="New Title" name="renametitle" ng-model="BoardRenameModel.Title" id="renametitle" class="form-control">
+            <button ng-click="RenameBoard()" class="btn-lg btn-primary">Rename Board</button>
+            
         </div>
      </div>
    </div>

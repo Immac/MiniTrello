@@ -93,6 +93,38 @@ angular.module('app.controllers')
                  });
             //$location.path('/');
         };
+        $scope.RenameBoard = function () {
+            console.log($scope.BoardRenameModel.Id);
+            console.log($scope.BoardRenameModel.Title);
+            console.log("RENAMEBOARD");
+            boardServices.renameBoard($scope.BoardRenameModel)
+                 .success(function (data, status, headers, config) {
+                     console.log("data sent:");
+                     console.log($scope.BoardRenameModel);
+                     console.log("data recieved:");
+                     console.log(data);
+
+                     if (data.ErrorCode != 0) {
+                         $scope.hasError = true;
+                         $scope.errorMessage = data.ErrorMessage;
+                         $scope.errorMessage = data.ErrorMessage;
+                         alert(data.ErrorMessage);
+                     } else {
+                         $scope.hasError = false;
+                         $scope.getBoardsForLoggedUser();
+                         $scope.BoardRenameModel = '';
+                         alert("Board was succesfully renamed.");
+                     }
+
+                 })
+                 .error(function (data, status, headers, config) {
+                     $scope.hasError = true;
+                     $scope.message = 'Error: an unexpected error has occured.';
+                 });
+            //$location.path('/');
+        };
+
+
 
         $scope.GetBoard = function() {
             boardServices.getBoard($stateParams.boardId)
@@ -245,6 +277,33 @@ angular.module('app.controllers')
                       $scope.hasError = false;
                       $scope.getBoardsForLoggedUser();
                       $scope.CardDeleteModel = '';
+                      $scope.GetBoard();
+                  }
+
+              })
+              .error(function (data, status, headers, config) {
+                  $scope.hasError = true;
+                  $scope.message = 'Error: an unexpected error has occured.';
+              });
+            //$location.path('/');
+        };
+
+        $scope.MoveCard = function () {
+            boardServices.moveCard($scope.CardMoveModel)
+              .success(function (data, status, headers, config) {
+                  console.log("data sent:");
+                  console.log($scope.CardMoveModel);
+                  console.log("data recieved:");
+                  console.log(data);
+
+                  if (data.ErrorCode != 0) {
+                      $scope.hasError = true;
+                      $scope.errorMessage = data.ErrorMessage;
+                      alert(data.ErrorMessage);
+                  } else {
+                      $scope.hasError = false;
+                      $scope.getBoardsForLoggedUser();
+                      $scope.CardMoveModel = '';
                       $scope.GetBoard();
                   }
 

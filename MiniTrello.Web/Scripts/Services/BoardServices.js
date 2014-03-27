@@ -21,6 +21,12 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
         console.log(model);
         return $http.delete(baseUrl + '/boards/'+model.Id+'/' + $window.sessionStorage.token);
     };
+    board.renameBoard = function (model) {
+        console.log("Rename:");
+        console.log(model);
+        console.log(baseUrl + '/boards/' + $window.sessionStorage.token);
+        return $http.post(baseUrl + '/boards/rename/' + $window.sessionStorage.token,model);
+    };
     board.getBoard = function (id) {
         return $http.get(baseUrl + '/boards/' + id + '/' + $window.sessionStorage.token);
     };
@@ -38,10 +44,15 @@ angular.module('app.services').factory('BoardServices', ['$http', '$window', fun
         console.log(model);
         return $http.post(baseUrl + '/boards/createcard/' + $window.sessionStorage.token, model);
     };
+    board.moveCard = function (model) {
+        console.log(model);
+        return $http.post(baseUrl + '/boards/movecard/' + $window.sessionStorage.token, model);
+    };
     board.deleteCard = function (model) {
         console.log(model);
         return $http.delete(baseUrl + '/boards/deletecard/'+model.Id+'/' + $window.sessionStorage.token);
     };
+
     board.addMember = function (model) {
         console.log(model);
         return $http.put(baseUrl + '/boards/addmember/' + $window.sessionStorage.token, model);
