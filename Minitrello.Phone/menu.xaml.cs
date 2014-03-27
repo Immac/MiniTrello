@@ -21,6 +21,10 @@ namespace Minitrello.Phone
         {
             if(App.ViewModel.IsLogedIn)
                 NavigationService.Navigate(new Uri("/boards.xaml", UriKind.Relative));
+            else
+            {
+                isLoadingBlock.Text = "Wait a couple of seconds and try again...";
+            }
         }
     }
 }

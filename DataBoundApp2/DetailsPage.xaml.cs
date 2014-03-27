@@ -1,10 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Data.Linq.Mapping;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Minitrello.Phone.ViewModels;
+using Microsoft.Phone.Shell;
+using DataBoundApp2.Resources;
 
-namespace Minitrello.Phone
+namespace DataBoundApp2
 {
     public partial class DetailsPage : PhoneApplicationPage
     {
@@ -12,7 +17,7 @@ namespace Minitrello.Phone
         public DetailsPage()
         {
             InitializeComponent();
-            LanesList.ItemsSource = detailModels;
+
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
@@ -20,53 +25,15 @@ namespace Minitrello.Phone
         // When page is navigated to set data context to selected item in list
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            string selectedIndex = "";
             if (DataContext == null)
             {
-                
+                string selectedIndex = "";
                 if (NavigationContext.QueryString.TryGetValue("selectedItem", out selectedIndex))
                 {
                     int index = int.Parse(selectedIndex);
                     DataContext = App.ViewModel.Items[index];
-                    
                 }
-                
             }
-             selectedIndex = "";
-            if (NavigationContext.QueryString.TryGetValue("selectedItem", out selectedIndex))
-            {
-                int index = int.Parse(selectedIndex);
-                App.ViewModel.LoadDetails(index);
-                LoadThis();
-            }
-           
-        }
-
-        private void LoadThis()
-        {
-            var lanes = App.ViewModel.LaneModels;
-            
-            
-            foreach (var laneModel in lanes)
-            {
-                var content = "";
-                content += laneModel.Name;
-                content += "\n";
-                var myCards = laneModel.Cards;
-                foreach (var cardModel in myCards)
-                {
-                    content += "Card Name: " + cardModel.Name + "\n";
-                    content += " " + cardModel.Content + "\n";
-                }
-                detailModels.Add(new DetailModel(content));
-
-            }
-        }
-        ObservableCollection<DetailModel> detailModels = new ObservableCollection<DetailModel>();
-
-        private void Pivot_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-
         }
 
         // Sample code for building a localized ApplicationBar
@@ -84,15 +51,5 @@ namespace Minitrello.Phone
         //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
         //    ApplicationBar.MenuItems.Add(appBarMenuItem);
         //}
-    }
-}
-
-public class DetailModel
-{
-    public string Content { get; set; }
-
-    public DetailModel(string station)
-    {
-        Content = station;
     }
 }

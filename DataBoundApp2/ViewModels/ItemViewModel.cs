@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
@@ -8,9 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Minitrello.Phone.Models;
 
-namespace Minitrello.Phone.ViewModels
+namespace DataBoundApp2.ViewModels
 {
     public class ItemViewModel : INotifyPropertyChanged
     {
@@ -94,26 +92,6 @@ namespace Minitrello.Phone.ViewModels
                 {
                     _lineThree = value;
                     NotifyPropertyChanged("LineThree");
-                }
-            }
-        }
-        private List<LaneModel> _lanes;
-        /// <summary>
-        /// Sample ViewModel property; this property is used in the view to display its value using a Binding.
-        /// </summary>
-        /// <returns></returns>
-        public List<LaneModel> Lanes
-        {
-            get
-            {
-                return _lanes;
-            }
-            set
-            {
-                if (value != _lanes)
-                {
-                    _lanes = value;
-                    NotifyPropertyChanged("Lanes");
                 }
             }
         }

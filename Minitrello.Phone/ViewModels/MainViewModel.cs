@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
@@ -33,11 +34,16 @@ namespace Minitrello.Phone.ViewModels
         }
 
         public ObservableCollection<ItemViewModel> Items { get; private set; }
+        public ObservableCollection<LaneModel> LaneModels { get; private set; }
+        public ObservableCollection<List<CardModel>> CardModels { get; private set; }
         const string BaseApiUrl = "http://mcminitrelloapi.apphb.com/";
 
+      
         public MainViewModel()
         {
             Items = new ObservableCollection<ItemViewModel>();
+            LaneModels = new ObservableCollection<LaneModel>();
+            CardModels = new ObservableCollection<List<CardModel>>();
         }
 
         /// <summary>
@@ -146,6 +152,7 @@ namespace Minitrello.Phone.ViewModels
                         });
                     }
                     IsLogedIn = true;
+                   
                 }
             }
             catch (Exception ex)
@@ -192,7 +199,8 @@ namespace Minitrello.Phone.ViewModels
                                 ID = (id++).ToString(),
                                 LineOne = board.Title,
                                 LineTwo = board.Id.ToString(),
-                                LineThree = board.MemberAccounts.ToString()
+                                Lanes = board.Lanes
+                                
                             }
                                 );
                         }
@@ -204,6 +212,7 @@ namespace Minitrello.Phone.ViewModels
                                  LineOne = "Nothing here."
                             });
                         }
+
                     }
                 }
             });
@@ -217,8 +226,27 @@ namespace Minitrello.Phone.ViewModels
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        public void LoadDetails(int id)
+        {
+            LaneModels.Clear();
+            CardModels.Clear();
+            var Name = Items[id].LineOne;
+            var lanes = Items[id].Lanes;
+            if (lanes != null)
+            {
+                foreach (var lane in lanes)
+                {
+                    LaneModels.Add(lane);
+                    CardModels.Add(lane.Cards);
+                }
+            }
+
+        }
+                
+        }
     }
-}
+
 
 
 

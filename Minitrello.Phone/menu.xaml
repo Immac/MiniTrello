@@ -30,7 +30,7 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
                 <Button x:Name="menuMyBoards" Content="My Boards" Click="menuMyBoards_Click"/>
-                <Button x:Name="menuMyOrganizations" Content="My Organizations"/>
+                <TextBlock x:Name="isLoadingBlock" TextWrapping="Wrap" Text="{Binding App.IsLoaded.toString}"/>
             </StackPanel>
 
         </Grid>
